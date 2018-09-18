@@ -1,4 +1,17 @@
-# Personal Project
-:arrow_forward: Please refer to [edX][1] for description and instructions.
+# Rediscover Music
 
-[1]: https://edge.edx.org/courses/course-v1:UBC+CPSC210+2018W1/courseware/a4d49b3ef5fa4fe2bd9496e76d72dc48/e2887456a15a48dbb040ecdac313168f/1?activate_block_id=block-v1%3AUBC%2BCPSC210%2B2018W1%2Btype%40vertical%2Bblock%40ff793bbcd5544e82bb5052f0dffe5d71
+This application can replay user's past favorite songs based on user's experience of them.
+
+## Stage - Lab 1 2016.09.14
+Creating a main method along with two other methods in the same file. The main method should make calls to the other two methods. There are also print statements in each method.
+
+## Stage - Lab 2 2016.09.19
+Created a main method that allow interaction to the users. Currently the program only ask Users to input Song Names and produces a playlist. For further development, I have already included more fields, setters and getters for the class Song. I will add those functionality in the Song Method in next week.
+
+
+
+
+
+## Authors
+
+* **Harry Chuang** - *Initial work* -
