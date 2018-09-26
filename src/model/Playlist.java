@@ -46,6 +46,15 @@ public class Playlist {
         }
     }
 
+    //EFFECTS: return true if the song in contained in playlist
+    public boolean contains(Song song){
+        if (this.listOfSongs.contains(song)){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     //EFFECTS: print out the names of all songs in the playlist
     public ArrayList<String> printPlayList() {
         ArrayList<String> songName = new ArrayList<String>();

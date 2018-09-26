@@ -5,8 +5,7 @@ import model.Song;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class testPlaylist {
@@ -55,6 +54,7 @@ public class testPlaylist {
         assertEquals(p.getSize(), 0);
         p.addSong(nullsong);
         assertEquals(p.getSize(), 0);
+        assertFalse(p.contains(september));
 
     }
 
@@ -63,6 +63,7 @@ public class testPlaylist {
         assertEquals(p.getSize(), 0);
         p.addSong(september);
         assertEquals(p.getSize(), 1);
+        assertTrue(p.contains(september));
 
     }
 
@@ -71,10 +72,13 @@ public class testPlaylist {
         assertEquals(p.getSize(), 0);
         p.addSong(september);
         assertEquals(p.getSize(), 1);
+        assertTrue(p.contains(september));
         p.addSong(lostInTheLight);
         assertEquals(p.getSize(), 2);
+        assertTrue(p.contains(lostInTheLight));
         p.addSong(islands);
         assertEquals(p.getSize(), 3);
+        assertTrue(p.contains(islands));
     }
 
 
