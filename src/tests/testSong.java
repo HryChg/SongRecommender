@@ -1,12 +1,19 @@
 package tests;
 
+import com.google.gson.Gson;
 import model.Song;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,6 +21,10 @@ public class testSong {
     private Song testSong;
     private Timestamp testTimeStampForLastPlayedDate = new Timestamp(0);
     private Timestamp testTimeStampForPlayedTime = new Timestamp(0);
+    private Timestamp testTimeStampForWriteToFile = new Timestamp(new Date().getTime());
+    private Timestamp testTimeStampForReadFromFile = new Timestamp(new Date().getTime());
+    private Gson gson = new Gson();
+
 
 
     @BeforeEach
@@ -86,6 +97,48 @@ public class testSong {
         assertEquals(ft.format(testTimeStampForPlayedTime), testSong.printPlayedTime());
     }
 
+
+    @Test
+    public void testWriteToFile() throws IOException{
+        testSong.setIsFavorite(true);
+        testSong.setLastPlayedDate(testTimeStampForWriteToFile);
+        testSong.setPlayedTime(testTimeStampForWriteToFile);
+        testSong.writeToFile(gson.toJson(testSong));
+
+        //Convert the text file to lines
+        Path filePath = Paths.get("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/src/savedFiles/savedSongs/", "September.txt");
+        List<String> lines = Files.readAllLines(filePath);
+        String firstLine = lines.get(0);
+
+        //Format the date
+        SimpleDateFormat ft = new SimpleDateFormat("MMM d, yyyy hh:mm:ss a");
+
+        //Expected outcome
+        String expectedOutput = "{\"songName\":\"September\"," +
+                "\"isFavorite\":true," +
+                "\"isHate\":false," +
+                "\"lastPlayedDate\":\""+ft.format(testTimeStampForWriteToFile)+"\"," +
+                "\"PlayedTime\":\""+ft.format(testTimeStampForWriteToFile)+"\"}";
+
+        //assertEquals
+        assertEquals(expectedOutput, firstLine);
+
+
+    }
+
+    @Test void testReadFromFile(){
+        Timestamp ts = new Timestamp(new Date().getTime());
+        Song song = new Song("testReadSongFile");
+
+        String filePath = "/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/src/tests/testFiles/testReadSongFile.txt";
+        song.readFromFile(filePath); //loading sotred info back to song
+
+        assertEquals("testReadSongFile", song.getSongName());
+        assertTrue(song.getIsFavorite());
+        assertTrue(song.getIsHate());
+        assertEquals("2018-10-02 23:55:40.0", song.getLastPlayedDate().toString());
+        //assertEquals("2018-10-02 23:55:40.0", song.getPlayedTime().toString());
+    }
 
 
 

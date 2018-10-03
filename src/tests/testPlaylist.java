@@ -1,9 +1,22 @@
 package tests;
 
+import com.google.gson.Gson;
 import model.Playlist;
 import model.Song;
+import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,13 +27,14 @@ public class testPlaylist {
     private Song september = new Song("September");
     private Song lostInTheLight= new Song ("LostInTheLight");
     private Song islands = new Song("Islands");
+    private Gson gson = new Gson();
 
 
 
     @BeforeEach
     public void setup(){
-        p = new Playlist();
-        p.setPlayListName("testPlaylist");
+        p = new Playlist("testPlaylist");
+
     }
 
     @Test
@@ -103,5 +117,44 @@ public class testPlaylist {
 
         assertEquals(p.printPlayList().size(), 3);
     }
+
+
+    @Test
+    public void testWriteToFile() throws IOException{
+        p.setPlayListName("FavoritePlaylist");
+        p.addSong(september);
+        p.addSong(lostInTheLight);
+        p.addSong(islands);
+        p.writeToFile(gson.toJson(p));
+
+        String expectedOutput = "{\"playListName\":\"FavoritePlaylist\",\"listOfSongs\":[{\"songName\":\"September\",\"isFavorite\":false,\"isHate\":false},{\"songName\":\"LostInTheLight\",\"isFavorite\":false,\"isHate\":false},{\"songName\":\"Islands\",\"isFavorite\":false,\"isHate\":false}]}";
+
+        Path filePath = Paths.get("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/src/savedFiles/savedPlaylists/FavoritePlaylist.txt");
+        List<String> lines = Files.readAllLines(filePath);
+        String firstLine = lines.get(0);
+
+        assertEquals(expectedOutput, firstLine);
+
+    }
+
+    @Test
+    public void testReadFromFile(){
+        List<String> expectedListOfSongs = Arrays.asList(september.getSongName(), lostInTheLight.getSongName(), islands.getSongName());
+        List<String> actualListOfSongs = new ArrayList<>();
+
+        p.readFromFile("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/src/savedFiles/savedPlaylists/FavoritePlaylist.txt");
+
+        assertEquals("FavoritePlaylist", p.getPlayListName());
+
+        for (Song song:p.getListOfSongs()){
+            actualListOfSongs.add(song.getSongName());
+        }
+        assertEquals(expectedListOfSongs, actualListOfSongs);
+
+
+    }
+
+
+
 
 }
