@@ -26,7 +26,6 @@ public class testSong {
     private Gson gson = new Gson();
 
 
-
     @BeforeEach
     public void setup() {
         testSong = new Song("September");
@@ -106,24 +105,22 @@ public class testSong {
         testSong.writeToFile(gson.toJson(testSong));
 
         //Convert the text file to lines
-        Path filePath = Paths.get("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/src/savedFiles/savedSongs/", "September.txt");
+        Path filePath = Paths.get("savedFiles/savedSongs/September.txt");
         List<String> lines = Files.readAllLines(filePath);
         String firstLine = lines.get(0);
 
         //Format the date
-        SimpleDateFormat ft = new SimpleDateFormat("MMM d, yyyy hh:mm:ss a");
+        SimpleDateFormat ft = new SimpleDateFormat("MMM d, yyyy h:mm:ss a");
 
         //Expected outcome
         String expectedOutput = "{\"songName\":\"September\"," +
                 "\"isFavorite\":true," +
                 "\"isHate\":false," +
                 "\"lastPlayedDate\":\""+ft.format(testTimeStampForWriteToFile)+"\"," +
-                "\"PlayedTime\":\""+ft.format(testTimeStampForWriteToFile)+"\"}";
+                "\"playedTime\":\""+ft.format(testTimeStampForWriteToFile)+"\"}";
 
         //assertEquals
         assertEquals(expectedOutput, firstLine);
-
-
     }
 
     @Test void testReadFromFile(){
@@ -131,13 +128,14 @@ public class testSong {
         Song song = new Song("testReadSongFile");
 
         String filePath = "/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/src/tests/testFiles/testReadSongFile.txt";
-        song.readFromFile(filePath); //loading sotred info back to song
+        song.readFromFile(filePath); //loading stored info back to song
 
         assertEquals("testReadSongFile", song.getSongName());
         assertTrue(song.getIsFavorite());
         assertTrue(song.getIsHate());
         assertEquals("2018-10-02 23:55:40.0", song.getLastPlayedDate().toString());
-        //assertEquals("2018-10-02 23:55:40.0", song.getPlayedTime().toString());
+        assertEquals("2018-10-02 23:55:40.0", song.getPlayedTime().toString());
+
     }
 
 

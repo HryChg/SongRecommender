@@ -4,8 +4,9 @@ package model;
 
 public interface Queueable {
 
-    // insert the item into the current Queue
-    void insert();
+    //MODIFIES: savedQueue.txt
+    //EFFECTS: insertQueue the item into the current Queue
+    void insertQueue();
 
 
 }

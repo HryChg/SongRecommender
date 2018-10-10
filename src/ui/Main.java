@@ -47,7 +47,7 @@ public class Main {
                 playlist.addSong(curr_song);
                 System.out.println("The songs <" + name + "> has been added");
             } else {
-                playlist.printPlayList();
+                playlist.print();
                 stillExecute = false;
             }
 
@@ -107,7 +107,7 @@ public class Main {
     //MODIFIES: this
     //EFFETCS: open multiple audio files under specified directory, convert each to Song and Add to Playlist
     public void openMultipleFiles() throws IOException {
-        String fileLocation = "/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/src/songs";
+        String fileLocation = "songs";
         File dir = new File(fileLocation);
 
 
@@ -132,7 +132,6 @@ public class Main {
         for (File file: openedFiles){
             Song currentSong = ap.parseFileToSong(file);
             playlist.addSong(currentSong);
-
         }
     }
 

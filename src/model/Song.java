@@ -19,12 +19,10 @@ public class Song implements Printable, Queueable {
     private Timestamp lastPlayedDate; // the date when the song is most recently played
     private Timestamp playedTime; // the time of the day when song is played
 
-
-
     private String fileLocation;
-    private static Gson gson = new Gson();
+    private static Gson gson = new Gson(); //used to create or read files
 
-
+    //CONSTRUCTORS
     public Song(String name) { this.songName = name; }
 
     //SETTERS
@@ -59,6 +57,14 @@ public class Song implements Printable, Queueable {
         return ft.format(this.lastPlayedDate);
     }
 
+    //EFFECTS: return the first played time of the song in String Format (Hour:Minute:Second);
+    //         it also print out statement indicating that time
+    public String printPlayedTime() {
+        SimpleDateFormat ft = new SimpleDateFormat("kk:mm:ss");
+        System.out.println("Last Played Time: " + ft.format(this.playedTime));
+        return ft.format(this.playedTime);
+    }
+
     @Override
     // EFFECTS: print out all information stored under this song
     public void print(){
@@ -71,7 +77,6 @@ public class Song implements Printable, Queueable {
             System.out.println(s);
         }
 
-
         try {
             printLastPlayedDate();
             printPlayedTime();
@@ -79,7 +84,7 @@ public class Song implements Printable, Queueable {
             dataToPrint.add(getLastPlayedDate().toString());
             dataToPrint.add(getPlayedTime().toString());
         } catch (NullPointerException e){
-            log("lastPlayedDate and playedTime are null");
+            System.out.println("Error: lastPlayedDate and playedTime are null");
         }
 
 
@@ -88,11 +93,12 @@ public class Song implements Printable, Queueable {
 
     @Override
     // MODIFIES: savedQueue.txt
-    // EFFECTS: insert the song into the savedQueue.txt
-    public void insert(){
-        String fileLocation =  "/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/src/savedFiles/savedQueue.txt";
+    // EFFECTS: insertQueue the song into the savedQueue.txt
+    public void insertQueue(){
+        String fileLocation =  "savedFiles/savedQueue.txt";
         File queueFile = new File (fileLocation);
 
+        // Create a file if it does not exists
         if (!queueFile.exists()) {
             try {
                 File directory = new File(queueFile.getParent());
@@ -102,40 +108,32 @@ public class Song implements Printable, Queueable {
                 queueFile.createNewFile();
 
             } catch (IOException e) {
-                log("Exception Occured: " + e.toString());
+                System.out.println("Exception Occured: " + e.toString());
             }
         }
 
         try {
             // Convenience Class for Writing character files
-            FileWriter playlistWriter;
-            playlistWriter = new FileWriter(queueFile.getAbsoluteFile(), true);
+            FileWriter songWriter;
+            songWriter = new FileWriter(queueFile.getAbsoluteFile(), true);
 
             //Write text
-            BufferedWriter bufferedWriter = new BufferedWriter(playlistWriter);
-            bufferedWriter.write("\n"+"-"+ getSongName());
+            BufferedWriter bufferedWriter = new BufferedWriter(songWriter);
+            bufferedWriter.write("\n"+"- "+ getSongName());
             bufferedWriter.close();
 
-            log("queueFile data saved at file location: " + fileLocation + "\n" + "Data: " + getSongName() + "\n");
+            System.out.println("queueFile data saved at file location: " + fileLocation + "\n" + "Data Added: " + getSongName() + "\n");
 
         } catch (IOException e) {
-            log("Hmmmm.. got an error while saving Playlist Data to file " + e.toString());
+            System.out.println("Hmm... got an error while saving inserting song ot queueFile: " + e.toString());
         }
 
-    }
-
-    //EFFECTS: return the first played time of the song in String Format (Hour:Minute:Second);
-    //         it also print out statement indicating that time
-    public String printPlayedTime() {
-        SimpleDateFormat ft = new SimpleDateFormat("kk:mm:ss");
-        System.out.println("Last Played Time: " + ft.format(this.playedTime));
-        return ft.format(this.playedTime);
     }
 
 
     //EFFECTS: open songName.txt
     public void writeToFile(String myData){
-        fileLocation = "src/savedFiles/savedSongs/"+getSongName()+ ".txt";
+        fileLocation = "savedFiles/savedSongs/"+getSongName()+ ".txt";
         File songFile = new File(fileLocation);
         if (!songFile.exists()){
             try{
@@ -164,12 +162,9 @@ public class Song implements Printable, Queueable {
             bufferedWriter.write(myData.toString());
             bufferedWriter.close();
 
-
-
-
             log("Song data saved at file location: " + "\n" + fileLocation);
         } catch (IOException e){
-            log("Hmm... Got an erro while saving Song data to file "+ e.toString());
+            log("Hmm... Got an erroR while saving Song data to file "+ e.toString());
         }
 
     }
@@ -177,31 +172,31 @@ public class Song implements Printable, Queueable {
     public void readFromFile(String fileLocation){
         File songFile = new File(fileLocation);
         if (!songFile.exists()){
-            log("File doesn't exist");
+            System.out.println("File doesn't exist");
         }
 
         InputStreamReader isReader;
         try {
-
             //We are unloading the saved file back to current object
             isReader = new InputStreamReader(new FileInputStream(songFile), "UTF-8");
             JsonReader myReader = new JsonReader(isReader);
-            Song song = gson.fromJson(myReader, Song.class);
+            Song extractedSong = gson.fromJson(myReader, Song.class);
 
-            songName = song.getSongName();
-            isFavorite = song.getIsFavorite();
-            isHate = song.getIsHate();
-            lastPlayedDate = song.getLastPlayedDate();
-            playedTime = song.getPlayedTime();
+            songName   = extractedSong.getSongName();
+            isFavorite = extractedSong.getIsFavorite();
+            isHate     = extractedSong.getIsHate();
+            lastPlayedDate = extractedSong.getLastPlayedDate();
+            playedTime = extractedSong.getPlayedTime();
 
+            System.out.println("Song Name: "+extractedSong.getSongName() +" is loaded");
 
-            log("Song Name: "+song.getSongName() +" is loaded");
 
         } catch (Exception e){
-            log("error load cahce from file " + e.toString());
+
+            log("error loading cache from file: " + e.toString());
         }
 
-        log("Song data loaded successfully from file" + "\n" + fileLocation);
+        System.out.println("Song data loaded successfully from location:" + "\n" + fileLocation);
 
     }
 

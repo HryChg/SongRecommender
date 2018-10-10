@@ -1,19 +1,20 @@
 package tests;
 
 import com.google.gson.Gson;
+import exceptions.nullException;
 import model.Playlist;
+import model.Printable;
 import model.Song;
-import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,38 +22,37 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class testPlaylist {
+public class testPlaylist extends abstractTestPrint {
     private Playlist p;
     private Song nullsong = null;
     private Song september = new Song("September");
-    private Song lostInTheLight= new Song ("LostInTheLight");
+    private Song lostInTheLight = new Song("LostInTheLight");
     private Song islands = new Song("Islands");
     private Gson gson = new Gson();
 
 
-
     @BeforeEach
-    public void setup(){
+    public void setup() {
         p = new Playlist("testPlaylist");
 
     }
 
     @Test
-    public void testSetUp(){
+    public void testSetUp() {
         assertEquals(p.getPlayListName(), "testPlaylist");
         p.setPlayListName("testPlaylistName");
-        assertEquals(p.getPlayListName(),"testPlaylistName");
+        assertEquals(p.getPlayListName(), "testPlaylistName");
         assertEquals(p.getSize(), 0);
     }
 
     @Test
-    public void testGetSongEmptyPlaylist(){
+    public void testGetSongEmptyPlaylist() {
         assertEquals(null, p.getSong(0));
 
     }
 
     @Test
-    public void testGetSongThreeSongPlaylist(){
+    public void testGetSongThreeSongPlaylist() {
         p.addSong(september);
         p.addSong(lostInTheLight);
         p.addSong(islands);
@@ -64,16 +64,15 @@ public class testPlaylist {
     }
 
     @Test
-    public void testAddSongNull(){
+    public void testAddSongNull() {
         assertEquals(p.getSize(), 0);
         p.addSong(nullsong);
         assertEquals(p.getSize(), 0);
         assertFalse(p.contains(september));
-
     }
 
     @Test
-    public void testAddSongOne(){
+    public void testAddSongOne() {
         assertEquals(p.getSize(), 0);
         p.addSong(september);
         assertEquals(p.getSize(), 1);
@@ -82,7 +81,7 @@ public class testPlaylist {
     }
 
     @Test
-    public void testAddSongThree(){
+    public void testAddSongThree() {
         assertEquals(p.getSize(), 0);
         p.addSong(september);
         assertEquals(p.getSize(), 1);
@@ -95,41 +94,38 @@ public class testPlaylist {
         assertTrue(p.contains(islands));
     }
 
-
-
     @Test
-    public void printPlayListEmpty(){
-        assertEquals(p.printPlayList().size(), 0);
-    }
-
-    @Test
-    public void printPlayListOneSong(){
-        p.addSong(september);
-        assertEquals(p.printPlayList().size(), 1);
-    }
-
-
-    @Test
-    public void printPlayListThreeSong(){
+    public void testAddRepeatSong(){
         p.addSong(september);
         p.addSong(lostInTheLight);
         p.addSong(islands);
+        assertEquals(p.getSize(), 3);
 
-        assertEquals(p.printPlayList().size(), 3);
+        p.addSong(islands);
+        assertEquals(p.getSize(), 3);
+        assertTrue(p.contains(islands));
+
+
+
+
+
     }
 
 
     @Test
-    public void testWriteToFile() throws IOException{
-        p.setPlayListName("FavoritePlaylist");
+    public void testWriteToFile() throws IOException {
+        p.setPlayListName("testPlaylistWriteToFile");
         p.addSong(september);
         p.addSong(lostInTheLight);
         p.addSong(islands);
         p.writeToFile(gson.toJson(p));
 
-        String expectedOutput = "{\"playListName\":\"FavoritePlaylist\",\"listOfSongs\":[{\"songName\":\"September\",\"isFavorite\":false,\"isHate\":false},{\"songName\":\"LostInTheLight\",\"isFavorite\":false,\"isHate\":false},{\"songName\":\"Islands\",\"isFavorite\":false,\"isHate\":false}]}";
+        String expectedOutput = "{\"playListName\":\"testPlaylistWriteToFile\",\"listOfSongs\":" +
+                "[{\"songName\":\"September\",\"isFavorite\":false,\"isHate\":false}," +
+                "{\"songName\":\"LostInTheLight\",\"isFavorite\":false,\"isHate\":false}," +
+                "{\"songName\":\"Islands\",\"isFavorite\":false,\"isHate\":false}]}";
 
-        Path filePath = Paths.get("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/src/savedFiles/savedPlaylists/FavoritePlaylist.txt");
+        Path filePath = Paths.get("savedFiles/savedPlaylists/testPlaylistWriteToFile.txt");
         List<String> lines = Files.readAllLines(filePath);
         String firstLine = lines.get(0);
 
@@ -138,23 +134,23 @@ public class testPlaylist {
     }
 
     @Test
-    public void testReadFromFile(){
-        List<String> expectedListOfSongs = Arrays.asList(september.getSongName(), lostInTheLight.getSongName(), islands.getSongName());
+    public void testReadFromFile() {
+        List<String> expectedListOfSongs = Arrays.asList(september.getSongName(),
+                lostInTheLight.getSongName(), islands.getSongName());
         List<String> actualListOfSongs = new ArrayList<>();
 
-        p.readFromFile("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/src/savedFiles/savedPlaylists/FavoritePlaylist.txt");
+        p.readFromFile("savedFiles/savedPlaylists/testPlaylistReadFromFile.txt");
 
-        assertEquals("FavoritePlaylist", p.getPlayListName());
+        assertEquals("testPlaylistReadFromFile", p.getPlayListName());
 
-        for (Song song:p.getListOfSongs()){
+        for (Song song : p.getListOfSongs()) {
             actualListOfSongs.add(song.getSongName());
         }
+        //have to verify just the song name because they are different objects and you cannot ask java to test if they
+        //    contain the same value
         assertEquals(expectedListOfSongs, actualListOfSongs);
 
-
     }
-
-
 
 
 }

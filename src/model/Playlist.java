@@ -2,17 +2,18 @@ package model;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
+import exceptions.nullException;
 
 import java.io.*;
 import java.util.ArrayList;
 
 import static org.apache.pdfbox.util.ErrorLogger.log;
 
-public class Playlist implements Queueable{
+public class Playlist extends AbstractReadableWritable implements Queueable {
     private String playListName;
     private ArrayList<Song> listOfSongs = new ArrayList<Song>();
     private static String fileLocation;
-    private static Gson gson = new Gson(); //use to reading and writing to savedPlayList
+    private static Gson gson = new Gson(); //used for reading and writing to savedPlayList
 
     public Playlist(String name) {
         this.playListName = name;
@@ -28,14 +29,16 @@ public class Playlist implements Queueable{
     public String getPlayListName() {
         return this.playListName;
     }
+
     public ArrayList<Song> getListOfSongs() {
         return this.listOfSongs;
     }
+
     public int getSize() {
         return this.listOfSongs.size();
     }
 
-    //EFFECTS: getting song in the playlist at specified index. Return null if the index is not in the range of playlist
+    //EFFECTS: return song at specified index in playlist. Return null if the index is not in the range of playlist
     public Song getSong(int location) {
         if ((0 <= location) && (location <= (this.getSize() - 1))) {
             return this.getListOfSongs().get(location);
@@ -44,40 +47,36 @@ public class Playlist implements Queueable{
     }
 
     //MODIFIES: this
-    //EFFECTS: add Song to the playlist, do nothing if the song is null
+    //EFFECTS: add Song to the playlist, do nothing if the song is already in playlist or the song is null
     public void addSong(Song song) {
-        if (song != null) {
+        if (!(song == null) && !this.listOfSongs.contains(song)){
             this.listOfSongs.add(song);
         }
     }
 
-    //EFFECTS: return true if the song in contained in playlist
+    //EFFECTS: return true if the playlist contain song
     public boolean contains(Song song) {
-        if (this.listOfSongs.contains(song)) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.listOfSongs.contains(song);
     }
 
-    //EFFECTS: print out the names of all songs in the playlist
-    public ArrayList<String> printPlayList() {
-        ArrayList<String> songName = new ArrayList<String>();
+    @Override
+    //EFFECTS: print out the names of all songs in the playlist.
+    public void print() {
         System.out.println("Current Playlist: " + this.getPlayListName());
         for (Song s : listOfSongs) {
             System.out.println("- " + s.getSongName());
-            songName.add(s.getSongName());
         }
-        return songName;
+
     }
 
     @Override
     //MODIFIES: savedQueue.txt
     //EFFECTS: insert the playlist to the savedQueue.txt
-    public void insert(){
-        String fileLocation =  "src/savedFiles/savedQueue.txt";
-        File queueFile = new File (fileLocation);
+    public void insertQueue() {
+        String fileLocation = "savedFiles/savedQueue.txt";
+        File queueFile = new File(fileLocation);
 
+        //create a new file if it does not exist under fileLocation
         if (!queueFile.exists()) {
             try {
                 File directory = new File(queueFile.getParent());
@@ -87,10 +86,11 @@ public class Playlist implements Queueable{
                 queueFile.createNewFile();
 
             } catch (IOException e) {
-                log("Exception Occured: " + e.toString());
+                System.out.println("Exception Occurred: " + e.toString());
             }
         }
 
+        //trying to add content into the queue
         try {
             // Convenience Class for Writing character files
             FileWriter playlistWriter;
@@ -98,25 +98,26 @@ public class Playlist implements Queueable{
 
             //Write text
             BufferedWriter bufferedWriter = new BufferedWriter(playlistWriter);
-            for (Song song: getListOfSongs()){
-                bufferedWriter.write("\n"+"-"+ song.getSongName());
+            for (Song song : getListOfSongs()) {
+                bufferedWriter.write("\n" + "- " + song.getSongName());
             }
             bufferedWriter.close();
 
-            log("queueFile data saved at file location: " + fileLocation + "\n" + "Data: " + getPlayListName() + "\n");
+            System.out.println("queueFile saved at location: " + fileLocation + "\n" + "Data added: " + getPlayListName() + "\n");
 
         } catch (IOException e) {
-            log("Hmmmm.. got an error while saving Playlist Data to file " + e.toString());
+            System.out.println("Hmm... got an error while saving Playlist Data to file " + e.toString());
         }
     }
 
-
+    @Override
     //REQUIRES: myData needs to be in the format of gson.toJson(object)
     //EFFECTS: write to playlistName.txt. Create a new playlistName.txt if not found.
-    public void writeToFile(String myData) throws IOException{
-        fileLocation = "src/savedFiles/savedPlaylists/"+ getPlayListName() +".txt";
+    public void writeToFile(String myData){
 
-        //Open or Create savedPlaylist.txt under fileLocation
+        fileLocation = "savedFiles/savedPlaylists/" + getPlayListName() + ".txt";
+
+        //Open or Create playlist under fileLocation
         File playlistFile = new File(fileLocation);
         if (!playlistFile.exists()) {
             try {
@@ -127,12 +128,17 @@ public class Playlist implements Queueable{
                 playlistFile.createNewFile();
 
             } catch (IOException e) {
-                log("Exception Occured: " + e.toString());
+                System.out.println("Exception Occurred: " + e.toString());
             }
         }
 
         //Clear out the content original file
-        PrintWriter writer = new PrintWriter(playlistFile);
+        PrintWriter writer = null;
+        try {
+            writer = new PrintWriter(playlistFile);
+        } catch (FileNotFoundException e) {
+            System.out.println("Exception Occurred: " + e.toString());
+        }
         writer.print("");
         writer.close();
 
@@ -147,15 +153,16 @@ public class Playlist implements Queueable{
             bufferedWriter.write(myData.toString());
             bufferedWriter.close();
 
-            log("Playlist data saved at file location: " + fileLocation + "\n" + "Data: " + myData + "\n");
+            System.out.println("playlistFile saved at location: " + fileLocation + "\n" + "Data added: " + myData + "\n");
 
         } catch (IOException e) {
-            log("Hmmmm.. got an error while saving Playlist Data to file " + e.toString());
+            System.out.println("Hmm... got an error while saving Playlist Data to file " + e.toString());
         }
 
     }
 
 
+    @Override
     //EFFECTS: read from savedPlaylist.txt
     public void readFromFile(String fileLocation) {
         File playlistFile = new File(fileLocation);
@@ -167,19 +174,21 @@ public class Playlist implements Queueable{
         try {
             isReader = new InputStreamReader(new FileInputStream(playlistFile), "UTF-8");
             JsonReader myReader = new JsonReader(isReader);
-            Playlist playlist = gson.fromJson(myReader, Playlist.class);
+            Playlist extractedPlaylist = gson.fromJson(myReader, Playlist.class);
 
-            playListName = playlist.getPlayListName();
-            listOfSongs = playlist.getListOfSongs();
+            playListName = extractedPlaylist.getPlayListName();
+            listOfSongs = extractedPlaylist.getListOfSongs();
 
-            log("Playlist Name: " + playlist.getPlayListName());
-            playlist.printPlayList();
+            System.out.println("Playlist Name Loaded: " + extractedPlaylist.getPlayListName());
+            extractedPlaylist.print();
 
         } catch (Exception e) {
-            log("error load cache from file " + e.toString());
+            System.out.println("error load cache from file " + e.toString());
+
         }
 
-        log("\n"+"Playlist Data loaded successfully from file " + "\n" + fileLocation);
+        System.out.println("\n" + "Playlist Data loaded successfully from location: " + "\n" + fileLocation);
+
 
     }
 
