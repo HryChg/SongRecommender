@@ -1,6 +1,7 @@
 package tests;
 
 import com.google.gson.Gson;
+import exceptions.EmptyStringException;
 import model.Song;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,17 @@ public class testSong {
     }
 
     @Test
-    public void testSetIsFavorite(){
+    public void testSetUpEmptyString() {
+        try {
+            testSong.setSongName("");
+            fail("Not supposed to reach this line.");
+        } catch (EmptyStringException e) {
+
+        }
+    }
+
+    @Test
+    public void testSetIsFavorite() {
         assertFalse(testSong.getIsFavorite());
         testSong.setIsFavorite(true);
         assertTrue(testSong.getIsFavorite());
@@ -50,7 +61,7 @@ public class testSong {
     }
 
     @Test
-    public void testSetIsHate(){
+    public void testSetIsHate() {
         assertFalse(testSong.getIsHate());
         testSong.setIsHate(true);
         assertTrue(testSong.getIsHate());
@@ -59,7 +70,7 @@ public class testSong {
     }
 
     @Test
-    public void testSetLastPlayed(){
+    public void testSetLastPlayed() {
         // make sure that testSong.getLastPlayedDate has not been assigned a value
         assertNull(testSong.getLastPlayedDate());
 
@@ -70,35 +81,35 @@ public class testSong {
     }
 
     @Test
-    public void testSetTiming(){
+    public void testSetTiming() {
         assertNull(testSong.getPlayedTime());
         testTimeStampForPlayedTime.setTime(new Date().getTime());
         testSong.setLastPlayedDate(testTimeStampForPlayedTime);
     }
 
     @Test
-    public void testPrintLastPlayed(){
+    public void testPrintLastPlayed() {
         assertNull(testSong.getLastPlayedDate());
         testTimeStampForLastPlayedDate.setTime(new Date().getTime());
         testSong.setLastPlayedDate(testTimeStampForLastPlayedDate);
-        SimpleDateFormat ft = new SimpleDateFormat ("E yyyy.MM.dd");
+        SimpleDateFormat ft = new SimpleDateFormat("E yyyy.MM.dd");
         assertEquals(testSong.printLastPlayedDate(), ft.format(testTimeStampForLastPlayedDate));
     }
 
 
     @Test
-    public void testPrintTiming(){
+    public void testPrintTiming() {
         assertNull(testSong.getPlayedTime());
         testTimeStampForPlayedTime.setTime(new Date().getTime());
         testSong.setPlayedTime(testTimeStampForPlayedTime);
 
-        SimpleDateFormat ft = new SimpleDateFormat ("kk:mm:ss");
+        SimpleDateFormat ft = new SimpleDateFormat("kk:mm:ss");
         assertEquals(ft.format(testTimeStampForPlayedTime), testSong.printPlayedTime());
     }
 
 
     @Test
-    public void testWriteToFile() throws IOException{
+    public void testWriteToFile() throws IOException {
         testSong.setIsFavorite(true);
         testSong.setLastPlayedDate(testTimeStampForWriteToFile);
         testSong.setPlayedTime(testTimeStampForWriteToFile);
@@ -116,14 +127,15 @@ public class testSong {
         String expectedOutput = "{\"songName\":\"September\"," +
                 "\"isFavorite\":true," +
                 "\"isHate\":false," +
-                "\"lastPlayedDate\":\""+ft.format(testTimeStampForWriteToFile)+"\"," +
-                "\"playedTime\":\""+ft.format(testTimeStampForWriteToFile)+"\"}";
+                "\"lastPlayedDate\":\"" + ft.format(testTimeStampForWriteToFile) + "\"," +
+                "\"playedTime\":\"" + ft.format(testTimeStampForWriteToFile) + "\"}";
 
         //assertEquals
         assertEquals(expectedOutput, firstLine);
     }
 
-    @Test void testReadFromFile(){
+    @Test
+    void testReadFromFile() {
         Timestamp ts = new Timestamp(new Date().getTime());
         Song song = new Song("testReadSongFile");
 
@@ -137,7 +149,6 @@ public class testSong {
         assertEquals("2018-10-02 23:55:40.0", song.getPlayedTime().toString());
 
     }
-
 
 
 }

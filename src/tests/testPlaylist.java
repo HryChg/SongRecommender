@@ -1,17 +1,16 @@
 package tests;
 
 import com.google.gson.Gson;
-import exceptions.nullException;
+import exceptions.AlreadyInPlaylistException;
+import exceptions.EmptyPlaylistException;
+import exceptions.EmptyStringException;
 import model.Playlist;
-import model.Printable;
 import model.Song;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,12 +37,29 @@ public class testPlaylist extends abstractTestPrint {
     }
 
     @Test
-    public void testSetUp() {
-        assertEquals(p.getPlayListName(), "testPlaylist");
-        p.setPlayListName("testPlaylistName");
-        assertEquals(p.getPlayListName(), "testPlaylistName");
-        assertEquals(p.getSize(), 0);
+    public void testSetPlaylistName() {
+        try {
+            assertEquals(p.getPlayListName(), "testPlaylist");
+            p.setPlaylistName("testPlaylistName");
+            assertEquals(p.getPlayListName(), "testPlaylistName");
+        } catch (EmptyStringException e) {
+            fail("Fail: EmptyStringException is not supposed to happen");
+        }
     }
+
+    @Test
+    public void testSetPLaylistNameEmptyString() {
+        try {
+            assertEquals(p.getPlayListName(), "testPlaylist");
+            p.setPlaylistName("");
+            fail("Fail: EmptyStringException is not supposed to happen");
+        } catch (EmptyStringException e) {
+
+        } finally {
+            assertEquals(p.getPlayListName(), "testPlaylist");
+        }
+    }
+
 
     @Test
     public void testGetSongEmptyPlaylist() {
@@ -51,11 +67,18 @@ public class testPlaylist extends abstractTestPrint {
 
     }
 
+
     @Test
     public void testGetSongThreeSongPlaylist() {
-        p.addSong(september);
-        p.addSong(lostInTheLight);
-        p.addSong(islands);
+
+        try {
+            p.addSong(september);
+            p.addSong(lostInTheLight);
+            p.addSong(islands);
+        } catch (AlreadyInPlaylistException e) {
+            fail("Fail: AlreadyInPlaylistException is not supposed to happen");
+        }
+
         assertEquals(p.getSize(), 3);
 
         assertEquals(september, p.getSong(0));
@@ -65,16 +88,28 @@ public class testPlaylist extends abstractTestPrint {
 
     @Test
     public void testAddSongNull() {
+        try {
+            p.addSong(nullsong);
+            fail("");
+        } catch (AlreadyInPlaylistException e) {
+            fail("");
+        } catch (NullPointerException e) {
+
+        }
         assertEquals(p.getSize(), 0);
-        p.addSong(nullsong);
-        assertEquals(p.getSize(), 0);
-        assertFalse(p.contains(september));
+
     }
 
     @Test
     public void testAddSongOne() {
-        assertEquals(p.getSize(), 0);
-        p.addSong(september);
+        try {
+            p.addSong(september);
+        } catch (AlreadyInPlaylistException e) {
+            fail("AlreadyInPlaylistException is not supposed to happen");
+        } catch (NullPointerException e) {
+            fail("NullPointerException is not supposed to happen");
+        }
+
         assertEquals(p.getSize(), 1);
         assertTrue(p.contains(september));
 
@@ -82,56 +117,102 @@ public class testPlaylist extends abstractTestPrint {
 
     @Test
     public void testAddSongThree() {
-        assertEquals(p.getSize(), 0);
-        p.addSong(september);
-        assertEquals(p.getSize(), 1);
-        assertTrue(p.contains(september));
-        p.addSong(lostInTheLight);
-        assertEquals(p.getSize(), 2);
-        assertTrue(p.contains(lostInTheLight));
-        p.addSong(islands);
-        assertEquals(p.getSize(), 3);
-        assertTrue(p.contains(islands));
+        try {
+            p.addSong(september);
+            assertEquals(p.getSize(), 1);
+            assertTrue(p.contains(september));
+            p.addSong(lostInTheLight);
+            assertEquals(p.getSize(), 2);
+            assertTrue(p.contains(lostInTheLight));
+            p.addSong(islands);
+            assertEquals(p.getSize(), 3);
+            assertTrue(p.contains(islands));
+        } catch (AlreadyInPlaylistException e) {
+            fail("Fail: AlreadyInPlaylistException is not supposed to happen");
+        } catch (NullPointerException e) {
+            fail("Fail: NullPointerException is not supposed to happen");
+        }
+
     }
 
     @Test
-    public void testAddRepeatSong(){
-        p.addSong(september);
-        p.addSong(lostInTheLight);
-        p.addSong(islands);
-        assertEquals(p.getSize(), 3);
+    public void testAddRepeatSong() {
+        try {
+            p.addSong(september);
+            p.addSong(lostInTheLight);
+            p.addSong(islands);
+            assertEquals(p.getSize(), 3);
+        } catch (AlreadyInPlaylistException e) {
+            fail("");
+        } catch (NullPointerException e) {
+            fail("");
+        }
 
-        p.addSong(islands);
+        try {
+            p.addSong(islands);
+            fail("Fail: Supposed to catch AlreadyInPlaylistException");
+        } catch (AlreadyInPlaylistException e) {
+
+        } catch (NullPointerException e) {
+            fail("Fail: NullPointerException is not supposed to happend");
+        }
+
         assertEquals(p.getSize(), 3);
         assertTrue(p.contains(islands));
-
-
-
 
 
     }
 
 
     @Test
-    public void testWriteToFile() throws IOException {
-        p.setPlayListName("testPlaylistWriteToFile");
-        p.addSong(september);
-        p.addSong(lostInTheLight);
-        p.addSong(islands);
-        p.writeToFile(gson.toJson(p));
+    public void testWriteToFile(){
+        try {
+            p.setPlaylistName("testPlaylistWriteToFile");
 
-        String expectedOutput = "{\"playListName\":\"testPlaylistWriteToFile\",\"listOfSongs\":" +
-                "[{\"songName\":\"September\",\"isFavorite\":false,\"isHate\":false}," +
-                "{\"songName\":\"LostInTheLight\",\"isFavorite\":false,\"isHate\":false}," +
-                "{\"songName\":\"Islands\",\"isFavorite\":false,\"isHate\":false}]}";
+            p.addSong(september);
+            p.addSong(lostInTheLight);
+            p.addSong(islands);
 
-        Path filePath = Paths.get("savedFiles/savedPlaylists/testPlaylistWriteToFile.txt");
-        List<String> lines = Files.readAllLines(filePath);
-        String firstLine = lines.get(0);
+            p.writeToFile(gson.toJson(p));
 
-        assertEquals(expectedOutput, firstLine);
 
+            String expectedOutput = "{\"playListName\":\"testPlaylistWriteToFile\",\"listOfSongs\":" +
+                    "[{\"songName\":\"September\",\"isFavorite\":false,\"isHate\":false}," +
+                    "{\"songName\":\"LostInTheLight\",\"isFavorite\":false,\"isHate\":false}," +
+                    "{\"songName\":\"Islands\",\"isFavorite\":false,\"isHate\":false}]}";
+
+            Path filePath = Paths.get("savedFiles/savedPlaylists/testPlaylistWriteToFile.txt");
+            List<String> lines = Files.readAllLines(filePath);
+            String firstLine = lines.get(0);
+
+            assertEquals(expectedOutput, firstLine);
+
+        } catch (EmptyStringException e) {
+            System.out.println("Oop. setPlaylistName detects an emptyString for playlistName");
+        } catch (AlreadyInPlaylistException e) {
+            fail("");
+        } catch (NullPointerException e) {
+            fail("");
+        } catch (EmptyPlaylistException e) {
+            fail("Playlist is empty!");
+        } catch(IOException e){
+            fail(e.toString());
+        }
     }
+
+    @Test
+    public void testWriteToFileEmptyPlaylistEx(){
+        try {
+            p.setPlaylistName("testPlaylistWriteToFile");
+            p.writeToFile(gson.toJson(p));
+            fail("empty playlist should not have been able to be saved to a file");
+        } catch (EmptyStringException e) {
+            System.out.println("Oop. setPlaylistName detects an emptyString for playlistName");
+        } catch (EmptyPlaylistException e) {
+
+        }
+    }
+
 
     @Test
     public void testReadFromFile() {

@@ -1,5 +1,8 @@
 package model;
 
+import exceptions.EmptyStringException;
+import exceptions.NotAudioFileException;
+import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
@@ -17,8 +20,17 @@ public class AudioParser {
 
     //REQUIRES: input File has to be of audio/mpeg format
     //EFFECTS: convert the audio file to Song
-    public Song parseFileToSong(File file){
+    //    throw NotAudioFileException when the file is not audio/mpeg format
+    public Song parseFileToSong(File file) throws NotAudioFileException {
+
         try {
+
+            //detecting the file type and throw NotAudioFileException if file is not audio
+            String fileType = detectFile(file);
+            if (file.isFile() && !(fileType.equals("audio/mpeg"))) {
+                throw new NotAudioFileException();
+            }
+
             InputStream input = new FileInputStream(file);
             ContentHandler handler = new DefaultHandler();
             Metadata metadata = new Metadata();
@@ -50,18 +62,28 @@ public class AudioParser {
             return currentSong;
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("File Not Found");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (TikaException e) {
             e.printStackTrace();
+        } catch (EmptyStringException e){
+            e.printStackTrace();
         }
 
-        //This is a placeholder, Java ask me to put a return statement here
+        System.out.println("Error... Returning a null song...");
         return null;
-
     }
+
+
+    //EFFECTS: return the file type of a given file
+    private String detectFile(File file) throws IOException {
+        Tika tika = new Tika();
+        String type = tika.detect(file);
+        return type;
+    }
+
 
 }

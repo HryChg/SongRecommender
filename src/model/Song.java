@@ -2,6 +2,8 @@ package model;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
+import exceptions.EmptyException;
+import exceptions.EmptyStringException;
 
 
 import java.io.*;
@@ -12,7 +14,7 @@ import java.util.*;
 import static org.apache.pdfbox.util.ErrorLogger.log;
 
 
-public class Song implements Printable, Queueable {
+public class Song extends AbstractReadableWritable implements Printable, Queueable {
     private String songName;
     private Boolean isFavorite = false;
     private Boolean isHate = false;   // whether user hates the song
@@ -23,30 +25,55 @@ public class Song implements Printable, Queueable {
     private static Gson gson = new Gson(); //used to create or read files
 
     //CONSTRUCTORS
-    public Song(String name) { this.songName = name; }
+    public Song(String name) {
+        this.songName = name;
+    }
 
     //SETTERS
-    public void setSongName(String name) { this.songName = name; }
+    //EFFECTS: Set the songName to name. Throw EmptyStringException is name is empty string.
+    public void setSongName(String name) throws EmptyStringException {
+        if (name == "")
+            throw new EmptyStringException();
+        this.songName = name;
+    }
 
-    public void setIsFavorite(Boolean favorite) { this.isFavorite = favorite; }
+    public void setIsFavorite(Boolean favorite) {
+        this.isFavorite = favorite;
+    }
 
-    public void setIsHate(Boolean hate) { this.isHate = hate; }
+    public void setIsHate(Boolean hate) {
+        this.isHate = hate;
+    }
 
-    public void setLastPlayedDate(Timestamp date) { this.lastPlayedDate = date; }
+    public void setLastPlayedDate(Timestamp date) {
+        this.lastPlayedDate = date;
+    }
 
-    public void setPlayedTime(Timestamp timing) { this.playedTime = timing; }
+    public void setPlayedTime(Timestamp timing) {
+        this.playedTime = timing;
+    }
 
 
     //GETTERS
-    public String getSongName() { return songName; }
+    public String getSongName() {
+        return songName;
+    }
 
-    public Boolean getIsFavorite() { return isFavorite; }
+    public Boolean getIsFavorite() {
+        return isFavorite;
+    }
 
-    public Boolean getIsHate() { return isHate; }
+    public Boolean getIsHate() {
+        return isHate;
+    }
 
-    public Timestamp getLastPlayedDate() { return lastPlayedDate; }
+    public Timestamp getLastPlayedDate() {
+        return lastPlayedDate;
+    }
 
-    public Timestamp getPlayedTime() { return playedTime; }
+    public Timestamp getPlayedTime() {
+        return playedTime;
+    }
 
 
     //EFFECTS: return the last played date of the song in String Format (DayInWeek Year Month Day);
@@ -67,13 +94,13 @@ public class Song implements Printable, Queueable {
 
     @Override
     // EFFECTS: print out all information stored under this song
-    public void print(){
+    public void print() {
         List<String> dataToPrint = new ArrayList<>();
-        dataToPrint.add("Song Name: "+songName);
-        dataToPrint.add("Favorite:  "+isFavorite.toString());
-        dataToPrint.add("Hate:      "+isHate.toString());
+        dataToPrint.add("Song Name: " + songName);
+        dataToPrint.add("Favorite:  " + isFavorite.toString());
+        dataToPrint.add("Hate:      " + isHate.toString());
 
-        for (String s: dataToPrint){
+        for (String s : dataToPrint) {
             System.out.println(s);
         }
 
@@ -83,10 +110,9 @@ public class Song implements Printable, Queueable {
 
             dataToPrint.add(getLastPlayedDate().toString());
             dataToPrint.add(getPlayedTime().toString());
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             System.out.println("Error: lastPlayedDate and playedTime are null");
         }
-
 
 
     }
@@ -94,9 +120,9 @@ public class Song implements Printable, Queueable {
     @Override
     // MODIFIES: savedQueue.txt
     // EFFECTS: insertQueue the song into the savedQueue.txt
-    public void insertQueue(){
-        String fileLocation =  "savedFiles/savedQueue.txt";
-        File queueFile = new File (fileLocation);
+    public void insertQueue() {
+        String fileLocation = "savedFiles/savedQueue.txt";
+        File queueFile = new File(fileLocation);
 
         // Create a file if it does not exists
         if (!queueFile.exists()) {
@@ -107,7 +133,8 @@ public class Song implements Printable, Queueable {
                 }
                 queueFile.createNewFile();
 
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 System.out.println("Exception Occured: " + e.toString());
             }
         }
@@ -119,11 +146,13 @@ public class Song implements Printable, Queueable {
 
             //Write text
             BufferedWriter bufferedWriter = new BufferedWriter(songWriter);
-            bufferedWriter.write("\n"+"- "+ getSongName());
+            bufferedWriter.write("\n" + "- " + getSongName());
             bufferedWriter.close();
 
             System.out.println("queueFile data saved at file location: " + fileLocation + "\n" + "Data Added: " + getSongName() + "\n");
 
+        } catch (FileNotFoundException e) {
+            System.out.println("Hey! File Not Found!");
         } catch (IOException e) {
             System.out.println("Hmm... got an error while saving inserting song ot queueFile: " + e.toString());
         }
@@ -132,25 +161,28 @@ public class Song implements Printable, Queueable {
 
 
     //EFFECTS: open songName.txt
-    public void writeToFile(String myData){
-        fileLocation = "savedFiles/savedSongs/"+getSongName()+ ".txt";
+    @Override
+    public void writeToFile(String myData) {
+
+
+        fileLocation = "savedFiles/savedSongs/" + getSongName() + ".txt";
         File songFile = new File(fileLocation);
-        if (!songFile.exists()){
-            try{
-                File directory = new File (songFile.getParent());
-                if (!directory.exists()){
+        if (!songFile.exists()) {
+            try {
+                File directory = new File(songFile.getParent());
+                if (!directory.exists()) {
                     directory.mkdirs();
                 }
                 songFile.createNewFile();
-            } catch (IOException e){
+            } catch (IOException e) {
                 log("Exception Occurred: " + e.toString());
             }
         }
 
-        try{
+        try {
             //Convenience Class for writing character files
             FileWriter songWriter;
-            songWriter = new FileWriter(songFile.getAbsoluteFile(),true);
+            songWriter = new FileWriter(songFile.getAbsoluteFile(), true);
 
             //Clear out the content original file
             PrintWriter writer = new PrintWriter(songFile);
@@ -163,15 +195,16 @@ public class Song implements Printable, Queueable {
             bufferedWriter.close();
 
             log("Song data saved at file location: " + "\n" + fileLocation);
-        } catch (IOException e){
-            log("Hmm... Got an erroR while saving Song data to file "+ e.toString());
+        } catch (IOException e) {
+            log("Hmm... Got an erroR while saving Song data to file " + e.toString());
         }
 
     }
 
-    public void readFromFile(String fileLocation){
+    @Override
+    public void readFromFile(String fileLocation) {
         File songFile = new File(fileLocation);
-        if (!songFile.exists()){
+        if (!songFile.exists()) {
             System.out.println("File doesn't exist");
         }
 
@@ -182,16 +215,16 @@ public class Song implements Printable, Queueable {
             JsonReader myReader = new JsonReader(isReader);
             Song extractedSong = gson.fromJson(myReader, Song.class);
 
-            songName   = extractedSong.getSongName();
+            songName = extractedSong.getSongName();
             isFavorite = extractedSong.getIsFavorite();
-            isHate     = extractedSong.getIsHate();
+            isHate = extractedSong.getIsHate();
             lastPlayedDate = extractedSong.getLastPlayedDate();
             playedTime = extractedSong.getPlayedTime();
 
-            System.out.println("Song Name: "+extractedSong.getSongName() +" is loaded");
+            System.out.println("Song Name: " + extractedSong.getSongName() + " is loaded");
 
 
-        } catch (Exception e){
+        } catch (Exception e) {
 
             log("error loading cache from file: " + e.toString());
         }
@@ -199,8 +232,6 @@ public class Song implements Printable, Queueable {
         System.out.println("Song data loaded successfully from location:" + "\n" + fileLocation);
 
     }
-
-
 
 
 }

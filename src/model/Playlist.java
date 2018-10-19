@@ -2,7 +2,10 @@ package model;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
-import exceptions.nullException;
+import exceptions.AlreadyInPlaylistException;
+import exceptions.EmptyException;
+import exceptions.EmptyPlaylistException;
+import exceptions.EmptyStringException;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -20,9 +23,11 @@ public class Playlist extends AbstractReadableWritable implements Queueable {
     }
 
     // MODIFIES: this
-    // EFFECTS: Setting the Playlist Name
-    public void setPlayListName(String playListName) {
-        this.playListName = playListName;
+    // EFFECTS: Setting the Playlist Name. Throw EmptyStringException if playlistName is empty string
+    public void setPlaylistName(String playlistName) throws EmptyStringException {
+        if (playlistName.equals(""))
+            throw new EmptyStringException();
+        this.playListName = playlistName;
     }
 
     //GETTERS
@@ -47,11 +52,17 @@ public class Playlist extends AbstractReadableWritable implements Queueable {
     }
 
     //MODIFIES: this
-    //EFFECTS: add Song to the playlist, do nothing if the song is already in playlist or the song is null
-    public void addSong(Song song) {
-        if (!(song == null) && !this.listOfSongs.contains(song)){
-            this.listOfSongs.add(song);
-        }
+    //EFFECTS: add Song to the playlist
+    //     throw AlreadyInPlaylistException if song already exists in playlist
+    //     throw NullPointerException if the song is null
+    public void addSong(Song song) throws AlreadyInPlaylistException {
+        if (this.listOfSongs.contains(song))
+            throw new AlreadyInPlaylistException();
+        if (song == null)
+            throw new NullPointerException();
+
+        this.listOfSongs.add(song);
+
     }
 
     //EFFECTS: return true if the playlist contain song
@@ -71,7 +82,7 @@ public class Playlist extends AbstractReadableWritable implements Queueable {
 
     @Override
     //MODIFIES: savedQueue.txt
-    //EFFECTS: insert the playlist to the savedQueue.txt
+    //EFFECTS: insert the playlist to savedQueue.txt
     public void insertQueue() {
         String fileLocation = "savedFiles/savedQueue.txt";
         File queueFile = new File(fileLocation);
@@ -105,6 +116,8 @@ public class Playlist extends AbstractReadableWritable implements Queueable {
 
             System.out.println("queueFile saved at location: " + fileLocation + "\n" + "Data added: " + getPlayListName() + "\n");
 
+        } catch (FileNotFoundException e) {
+            System.out.println("Error! File not Found!");
         } catch (IOException e) {
             System.out.println("Hmm... got an error while saving Playlist Data to file " + e.toString());
         }
@@ -113,7 +126,10 @@ public class Playlist extends AbstractReadableWritable implements Queueable {
     @Override
     //REQUIRES: myData needs to be in the format of gson.toJson(object)
     //EFFECTS: write to playlistName.txt. Create a new playlistName.txt if not found.
-    public void writeToFile(String myData){
+    //    throws EmptyPlaylistException is the playlist is empty
+    public void writeToFile(String myData) throws EmptyPlaylistException {
+        if (this.getSize() == 0)
+            throw new EmptyPlaylistException();
 
         fileLocation = "savedFiles/savedPlaylists/" + getPlayListName() + ".txt";
 
@@ -167,7 +183,7 @@ public class Playlist extends AbstractReadableWritable implements Queueable {
     public void readFromFile(String fileLocation) {
         File playlistFile = new File(fileLocation);
         if (!playlistFile.exists()) {
-            log("File does not exist");
+            log("The files does not exists.");
         }
 
         InputStreamReader isReader;
@@ -184,12 +200,9 @@ public class Playlist extends AbstractReadableWritable implements Queueable {
 
         } catch (Exception e) {
             System.out.println("error load cache from file " + e.toString());
-
         }
 
         System.out.println("\n" + "Playlist Data loaded successfully from location: " + "\n" + fileLocation);
-
-
     }
 
 

@@ -1,39 +1,40 @@
 package ui;
 
 import com.google.gson.Gson;
+import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
+import exceptions.AlreadyInPlaylistException;
+import exceptions.EmptyPlaylistException;
+import exceptions.EmptyStringException;
+import exceptions.NotAudioFileException;
 import model.AudioParser;
 import model.Playlist;
 import model.Song;
-import org.apache.tika.Tika;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Scanner;
 
 
 public class Main {
-    private Playlist playlist = new Playlist("MainPlaylist");
+    private static Playlist mainPlaylist = new Playlist("MainPlaylist");
+    private static String audioFilesLocation = "songs";
+
     private Scanner scanner = new Scanner(System.in);
     private Timestamp currentTimeStamp = new Timestamp(0);
-    private ArrayList<File> openedFiles = new ArrayList<>();
     private Gson gson = new Gson();
 
 
-    //GETTERS
-    public ArrayList<File> getOpenedFiles() {
-        return openedFiles;
-    }
 
-
-    // MODIFIES: playlist, scanner
-    // EFFECTS: prompt user to input songs into a playlist
+    // MODIFIES: this, scanner
+    // EFFECTS: prompt user to input songs into a mainPlaylist
     public void inputSongsToPlaylist() {
-        playlist.setPlayListName("uiPlaylist");
+        try {
+            mainPlaylist.setPlaylistName("uiPlaylist");
+        } catch (EmptyStringException e) {
+            System.out.println("setPlaylistName detects an emptyString for playlistName");
+        }
 
         // asking user to input songs
         boolean stillExecute = true;
@@ -43,11 +44,18 @@ public class Main {
 
             if (!name.equals("q")) {
                 Song curr_song = new Song("test");
-                curr_song.setSongName(name);
-                playlist.addSong(curr_song);
+
+                try {
+                    curr_song.setSongName(name);
+                    mainPlaylist.addSong(curr_song);
+                } catch (AlreadyInPlaylistException e){
+                    System.out.println("Fail: curr_song is Null!");
+                } catch (EmptyStringException e){
+                    System.out.println("Fail: Current Song Name is null.");
+                }
                 System.out.println("The songs <" + name + "> has been added");
             } else {
-                playlist.print();
+                mainPlaylist.print();
                 stillExecute = false;
             }
 
@@ -56,14 +64,14 @@ public class Main {
     }
 
 
-    // MODIFIES: playlist
+    // MODIFIES: this
     //EFFECTS: ask user if first time playing a song or recently played it.
     public void askEachSongStatus() {
         currentTimeStamp.setTime(new Date().getTime());
         int countSongUpdated = 0;
 
-        for (int i = 0; i <= (playlist.getSize() - 1); i++) {
-            Song currentSong = playlist.getSong(i);
+        for (int i = 0; i <= (mainPlaylist.getSize() - 1); i++) {
+            Song currentSong = mainPlaylist.getSong(i);
 
             boolean userReply = false;
             while (!userReply) {
@@ -96,57 +104,50 @@ public class Main {
     }
 
 
-    //EFFECTS: return the file type of a given file
-    private String detectFile(File file) throws IOException {
-        Tika tika = new Tika();
-        String type = tika.detect(file);
-        return type;
-    }
 
-
-    //MODIFIES: this
-    //EFFETCS: open multiple audio files under specified directory, convert each to Song and Add to Playlist
-    public void openMultipleFiles() throws IOException {
-        String fileLocation = "songs";
-        File dir = new File(fileLocation);
+    //MODIFIES: playlist
+    //EFFECTS: open multiple audio files under specified directory, convert each AudioFiles to Song and Add to Playlist.
+    //     skip files that are not of audio format. Throw NullPointerException if filesLocation not exists.
+    public void saveMultipleAudioFilesToPlaylist(String filesLocation, Playlist playlist){
+        File dir = new File(filesLocation);
+        AudioParser ap = new AudioParser();
 
 
         if (dir.isDirectory()) {
             for (File file : dir.listFiles()) {
-                String fileType = detectFile(file);
-                if (file.isFile() && fileType.equals("audio/mpeg")) {
-                    openedFiles.add(file);
+                try {
+                    Song parsedSong = ap.parseFileToSong(file);
+                    playlist.addSong(parsedSong);
+                } catch (NotAudioFileException e) {
+                    System.out.println("Detected a file that is not audio: "+file.getName());
+                    System.out.println("Skipping to the next file... \n");
+                } catch (AlreadyInPlaylistException e){
+                    System.out.println(file.getName() + " is already in playlist.");
+                    System.out.println("Skipping to the next file... \n");
                 }
             }
-            System.out.println(openedFiles);
+            System.out.println("Here are the audio files saved:");
+            playlist.print();
+
         } else {
-            System.out.println("This directory does not exist!");
+            throw new NullPointerException();
         }
     }
 
 
-    //EFFECTS: Create a Song for each element in the opened files
-    public void convertFilesToSongs(List<File> openedFiles){
-        AudioParser ap = new AudioParser();
-
-        for (File file: openedFiles){
-            Song currentSong = ap.parseFileToSong(file);
-            playlist.addSong(currentSong);
+    public void writeMainPlaylistFile(){
+        try {
+            mainPlaylist.writeToFile(gson.toJson(mainPlaylist));
+        } catch (EmptyPlaylistException e){
+            System.out.println("Error: Playlist is empty");
         }
     }
 
-    public void writeMainPlaylistFile() throws IOException{
-        playlist.writeToFile(gson.toJson(playlist));
-    }
 
-
-
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args){
         Main m = new Main();
 //        m.inputSongsToPlaylist();
-        m.openMultipleFiles();
-        m.convertFilesToSongs(m.getOpenedFiles());
+        m.saveMultipleAudioFilesToPlaylist(audioFilesLocation, mainPlaylist);
         m.askEachSongStatus();
         m.writeMainPlaylistFile();
 

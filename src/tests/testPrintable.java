@@ -1,6 +1,7 @@
 package tests;
 
 import com.sun.org.apache.bcel.internal.generic.ARRAYLENGTH;
+import exceptions.AlreadyInPlaylistException;
 import model.Playlist;
 import model.Printable;
 import model.Song;
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class testPrintable extends abstractTestPrint{
     Timestamp testTS = new Timestamp(new Date().getTime());
@@ -82,8 +84,13 @@ public class testPrintable extends abstractTestPrint{
 
     @Test
     public void printPlayListOneSong() {
+
         Playlist p = new Playlist("testPlaylist");
-        p.addSong(september);
+        try {
+            p.addSong(september);
+        } catch (AlreadyInPlaylistException e) {
+            fail("");
+        }
 
         String expectedOutput = "Current Playlist: testPlaylist\n- September\n";
         verifyPrint(p, expectedOutput);
@@ -93,10 +100,13 @@ public class testPrintable extends abstractTestPrint{
     @Test
     public void printPlayListThreeSong() {
         Playlist p = new Playlist("testPlaylist");
-        p.addSong(september);
-        p.addSong(lostInTheLight);
-        p.addSong(islands);
-
+        try {
+            p.addSong(september);
+            p.addSong(lostInTheLight);
+            p.addSong(islands);
+        } catch (AlreadyInPlaylistException e){
+            fail("");
+        }
         String expectedOutput = "Current Playlist: testPlaylist\n- September\n- LostInTheLight\n- Islands\n";
         verifyPrint(p, expectedOutput);
     }

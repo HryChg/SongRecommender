@@ -16,6 +16,18 @@ Created Two Interface Queueable and Printable,
 AudioParser, Save and Load Methods, and update main to take in multiple 
 audiofiles.
 
+## Stage - Lab 5 2018.10.10
+Created Two abstract classes 
+AbstractReadableSWritable and AbstractTestPrintable. 
+There is also a new behaviour such as audio parser and 
+opening multiple files in the main.
+
+## Stage - Lab 6 and 7 2018.10.24
+Created multiple exceptions tailored to the Song Playlist AudioParser ... etc
+Rewrite tests to accommodate Exceptions 
+Dealts with IOE Exceptions by handling them locally in the method
+
+
 
 ## Authors
 * **Harry Chuang**
