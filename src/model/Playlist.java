@@ -3,23 +3,32 @@ package model;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import exceptions.AlreadyInPlaylistException;
-import exceptions.EmptyException;
 import exceptions.EmptyPlaylistException;
 import exceptions.EmptyStringException;
 
 import java.io.*;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+
 
 import static org.apache.pdfbox.util.ErrorLogger.log;
 
 public class Playlist extends AbstractReadableWritable implements Queueable {
     private String playListName;
-    private ArrayList<Song> listOfSongs = new ArrayList<Song>();
-    private static String fileLocation;
+    private ArrayList<Song> listOfSongs;
+    private HashMap<Song, Timestamp> songAddDates; //each song is associated with an add date to the playlist
+
+
+    //hashMap
+    //when it was added to playlist
     private static Gson gson = new Gson(); //used for reading and writing to savedPlayList
 
     public Playlist(String name) {
         this.playListName = name;
+        this.listOfSongs = new ArrayList<>();
+        this.songAddDates = new HashMap<>();
     }
 
     // MODIFIES: this
@@ -39,6 +48,10 @@ public class Playlist extends AbstractReadableWritable implements Queueable {
         return this.listOfSongs;
     }
 
+    public HashMap<Song, Timestamp> getSongAddDates() {
+        return songAddDates;
+    }
+
     public int getSize() {
         return this.listOfSongs.size();
     }
@@ -56,18 +69,28 @@ public class Playlist extends AbstractReadableWritable implements Queueable {
     //     throw AlreadyInPlaylistException if song already exists in playlist
     //     throw NullPointerException if the song is null
     public void addSong(Song song) throws AlreadyInPlaylistException {
-        if (this.listOfSongs.contains(song))
-            throw new AlreadyInPlaylistException();
         if (song == null)
             throw new NullPointerException();
 
-        this.listOfSongs.add(song);
-
+        if (this.listOfSongs.contains(song)) {
+            throw new AlreadyInPlaylistException();
+        } else {
+            this.listOfSongs.add(song);
+            this.songAddDates.put(song, new Timestamp(new Date().getTime()));
+            song.addAssociatedPlaylist(this);
+            //System.out.println(song.getSongName()+" added.");
+        }
     }
+
 
     //EFFECTS: return true if the playlist contain song
     public boolean contains(Song song) {
-        return this.listOfSongs.contains(song);
+        for (Song s : listOfSongs) {
+            if (s.equals(song))
+                return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -131,7 +154,7 @@ public class Playlist extends AbstractReadableWritable implements Queueable {
         if (this.getSize() == 0)
             throw new EmptyPlaylistException();
 
-        fileLocation = "savedFiles/savedPlaylists/" + getPlayListName() + ".txt";
+        String fileLocation = "savedFiles/savedPlaylists/" + getPlayListName() + ".txt";
 
         //Open or Create playlist under fileLocation
         File playlistFile = new File(fileLocation);
@@ -166,17 +189,18 @@ public class Playlist extends AbstractReadableWritable implements Queueable {
 
             //Write text
             BufferedWriter bufferedWriter = new BufferedWriter(playlistWriter);
-            bufferedWriter.write(myData.toString());
+            bufferedWriter.write(myData);
             bufferedWriter.close();
 
             System.out.println("playlistFile saved at location: " + fileLocation + "\n" + "Data added: " + myData + "\n");
 
         } catch (IOException e) {
             System.out.println("Hmm... got an error while saving Playlist Data to file " + e.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
-
 
     @Override
     //EFFECTS: read from savedPlaylist.txt
@@ -205,6 +229,55 @@ public class Playlist extends AbstractReadableWritable implements Queueable {
         System.out.println("\n" + "Playlist Data loaded successfully from location: " + "\n" + fileLocation);
     }
 
+    @Override
+    //EFFECTS: return true if two playlist have the same name and same order of songs.
+    public boolean equals(Object playlist) {
+        if (this == playlist)
+            return true;
+
+        if (playlist == null || this.getClass() != playlist.getClass()) {
+            return false;
+        }
+
+        //Compare playlist name
+        Playlist castedPlaylist = (Playlist) playlist;
+        if (this.getPlayListName() != castedPlaylist.getPlayListName())
+            return false;
+
+        //Compare playlist listOfSongs
+        ArrayList<Song> songsToBeCompared = castedPlaylist.getListOfSongs();
+        ArrayList<Song> originalSongs = this.getListOfSongs();
+        //if two playlist has same songs but different order, this will return false
+        if (!originalSongs.equals(songsToBeCompared))
+            return false;
+
+
+//        //Compare playlist songAddDates, !!! the add date will lead to the hashMap not being equal!!!
+//        HashMap<Song, Timestamp> dateMapToBeCompared = castedPlaylist.getSongAddDates();
+//        HashMap<Song, Timestamp> originalDateMap = this.getSongAddDates();
+//        if (!originalDateMap.equals(dateMapToBeCompared))
+//            return false;
+
+
+        return true;
+
+
+    }
+
+    @Override
+    //EFFECTS: generate hashCode of a playlist.
+    public int hashCode() {
+        //generated by the songs it contains and the playlist name
+        //Same playlist name but different song order will lead to different hashCode
+        int hashCode = playListName.hashCode();
+        for (Song song : listOfSongs) {
+            hashCode = 31 * hashCode + (song == null ? 0 : song.hashCode());
+        }
+        for (Song song : songAddDates.keySet()) {
+            hashCode = 31 * hashCode + (songAddDates.get(song) == null ? 0 : songAddDates.get(song).hashCode());
+        }
+        return hashCode;
+    }
 
 }
 

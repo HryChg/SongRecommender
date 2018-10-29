@@ -1,1 +1,0 @@
-{"playListName":"testPlaylistWriteToFile","listOfSongs":[{"songName":"September","isFavorite":false,"isHate":false},{"songName":"LostInTheLight","isFavorite":false,"isHate":false},{"songName":"Islands","isFavorite":false,"isHate":false}]}

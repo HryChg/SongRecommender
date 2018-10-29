@@ -2,11 +2,12 @@ package tests;
 
 import com.google.gson.Gson;
 import exceptions.EmptyStringException;
+import model.Playlist;
 import model.Song;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,7 +24,6 @@ public class testSong {
     private Timestamp testTimeStampForLastPlayedDate = new Timestamp(0);
     private Timestamp testTimeStampForPlayedTime = new Timestamp(0);
     private Timestamp testTimeStampForWriteToFile = new Timestamp(new Date().getTime());
-    private Timestamp testTimeStampForReadFromFile = new Timestamp(new Date().getTime());
     private Gson gson = new Gson();
 
 
@@ -135,7 +135,7 @@ public class testSong {
     }
 
     @Test
-    void testReadFromFile() {
+    public void testReadFromFile() {
         Timestamp ts = new Timestamp(new Date().getTime());
         Song song = new Song("testReadSongFile");
 
@@ -151,4 +151,37 @@ public class testSong {
     }
 
 
+    @Test
+    public void testEqualsSameReference(){
+        Song testSongSameReference = testSong;
+        assertTrue(testSong.equals(testSongSameReference));
+    }
+
+    @Test
+    public void testEqualsNull(){
+        Song nullSong = null;
+        assertFalse(testSong.equals(nullSong));
+    }
+
+    @Test
+    public void testEequalsTwoSongs(){
+        Song testSongDifferentObject = new Song("September");
+        assertTrue(testSong.equals(testSongDifferentObject));
+    }
+
+    @Test
+    public void testHashCode(){
+        Song testSongDifferentObject = new Song("September");
+        assertEquals(testSong.hashCode(), testSongDifferentObject.hashCode());
+
+
+    }
+
+    @Test
+    public void testAddPlaylist(){
+        Playlist testPlaylist = new Playlist("Hi");
+        testSong.addAssociatedPlaylist(testPlaylist);
+        assertTrue(testSong.getAssociatedPlaylists().contains(testPlaylist));
+        assertTrue(testPlaylist.getListOfSongs().contains(testSong));
+    }
 }

@@ -1,4 +1,4 @@
 package exceptions;
 
-public class EmptyPlaylistException extends EmptyException {
+public class EmptyPlaylistException extends Exception {
 }

@@ -2,7 +2,7 @@ package model;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
-import exceptions.EmptyException;
+import exceptions.AlreadyInPlaylistException;
 import exceptions.EmptyStringException;
 
 
@@ -21,12 +21,15 @@ public class Song extends AbstractReadableWritable implements Printable, Queueab
     private Timestamp lastPlayedDate; // the date when the song is most recently played
     private Timestamp playedTime; // the time of the day when song is played
 
-    private String fileLocation;
+
+    private transient Set<Playlist> associatedPlaylists; //associated Playlist
+
     private static Gson gson = new Gson(); //used to create or read files
 
     //CONSTRUCTORS
     public Song(String name) {
         this.songName = name;
+        this.associatedPlaylists = new HashSet<>();
     }
 
     //SETTERS
@@ -75,6 +78,8 @@ public class Song extends AbstractReadableWritable implements Printable, Queueab
         return playedTime;
     }
 
+    public Set<Playlist> getAssociatedPlaylists(){ return associatedPlaylists;}
+
 
     //EFFECTS: return the last played date of the song in String Format (DayInWeek Year Month Day);
     //         it also print out statements indicating that date
@@ -115,6 +120,8 @@ public class Song extends AbstractReadableWritable implements Printable, Queueab
         }
 
 
+
+
     }
 
     @Override
@@ -133,8 +140,7 @@ public class Song extends AbstractReadableWritable implements Printable, Queueab
                 }
                 queueFile.createNewFile();
 
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 System.out.println("Exception Occured: " + e.toString());
             }
         }
@@ -163,9 +169,7 @@ public class Song extends AbstractReadableWritable implements Printable, Queueab
     //EFFECTS: open songName.txt
     @Override
     public void writeToFile(String myData) {
-
-
-        fileLocation = "savedFiles/savedSongs/" + getSongName() + ".txt";
+        String fileLocation = "savedFiles/savedSongs/" + getSongName() + ".txt";
         File songFile = new File(fileLocation);
         if (!songFile.exists()) {
             try {
@@ -193,10 +197,10 @@ public class Song extends AbstractReadableWritable implements Printable, Queueab
             BufferedWriter bufferedWriter = new BufferedWriter(songWriter);
             bufferedWriter.write(myData.toString());
             bufferedWriter.close();
+            System.out.println("Song data saved at file location: " + "\n" + fileLocation);
 
-            log("Song data saved at file location: " + "\n" + fileLocation);
         } catch (IOException e) {
-            log("Hmm... Got an erroR while saving Song data to file " + e.toString());
+            log("Hmm... Got an error while saving Song data to file " + e.toString());
         }
 
     }
@@ -231,6 +235,34 @@ public class Song extends AbstractReadableWritable implements Printable, Queueab
 
         System.out.println("Song data loaded successfully from location:" + "\n" + fileLocation);
 
+    }
+
+    @Override
+    public boolean equals(Object song) {
+        if (this == song)
+            return true;
+
+        if (song == null || this.getClass() != song.getClass())
+            return false;
+
+        Song castedSong = (Song) song;
+        return this.songName.equals(castedSong.songName);
+    }
+
+    @Override
+    //EFFECTS: return hashCode of the song based on songName
+    public int hashCode() { return Objects.hashCode(songName);}
+
+    public void addAssociatedPlaylist(Playlist playlist){
+
+        if (!associatedPlaylists.contains(playlist)) {
+            associatedPlaylists.add(playlist);
+            try {
+                playlist.addSong(this);
+            } catch (AlreadyInPlaylistException e) {
+                //do nothing
+            }
+        }
     }
 
 

@@ -17,6 +17,7 @@ import java.io.*;
 
 
 public class AudioParser {
+    Song currentSong = new Song("noName");
 
     //REQUIRES: input File has to be of audio/mpeg format
     //EFFECTS: convert the audio file to Song
@@ -56,9 +57,7 @@ public class AudioParser {
 //            System.out.println("Genre : "+metadata.get("xmpDM:genre"));
 //            System.out.println("Album : "+metadata.get("xmpDM:album"));
 
-            Song currentSong = new Song("noName");
             currentSong.setSongName(metadata.get("title"));
-
             return currentSong;
 
         } catch (FileNotFoundException e) {
