@@ -13,16 +13,11 @@ import java.util.Date;
 import java.util.HashMap;
 
 
-import static org.apache.pdfbox.util.ErrorLogger.log;
-
-public class Playlist extends AbstractReadableWritable implements Queueable {
+public class Playlist extends ReadableWritable implements Queueable, Printable{
     private String playListName;
     private ArrayList<Song> listOfSongs;
     private HashMap<Song, Timestamp> songAddDates; //each song is associated with an add date to the playlist
 
-
-    //hashMap
-    //when it was added to playlist
     private static Gson gson = new Gson(); //used for reading and writing to savedPlayList
 
     public Playlist(String name) {
@@ -147,86 +142,36 @@ public class Playlist extends AbstractReadableWritable implements Queueable {
     }
 
     @Override
-    //REQUIRES: myData needs to be in the format of gson.toJson(object)
-    //EFFECTS: write to playlistName.txt. Create a new playlistName.txt if not found.
+    //REQUIRES: myData needs to be in the format of GSON string
+    //EFFECTS: save myData to a file under savedFiles/savedPlaylists with playlistName as fileName
     //    throws EmptyPlaylistException is the playlist is empty
     public void writeToFile(String myData) throws EmptyPlaylistException {
         if (this.getSize() == 0)
             throw new EmptyPlaylistException();
-
         String fileLocation = "savedFiles/savedPlaylists/" + getPlayListName() + ".txt";
-
-        //Open or Create playlist under fileLocation
-        File playlistFile = new File(fileLocation);
-        if (!playlistFile.exists()) {
-            try {
-                File directory = new File(playlistFile.getParent());
-                if (!directory.exists()) {
-                    directory.mkdirs();
-                }
-                playlistFile.createNewFile();
-
-            } catch (IOException e) {
-                System.out.println("Exception Occurred: " + e.toString());
-            }
-        }
-
-        //Clear out the content original file
-        PrintWriter writer = null;
-        try {
-            writer = new PrintWriter(playlistFile);
-        } catch (FileNotFoundException e) {
-            System.out.println("Exception Occurred: " + e.toString());
-        }
-        writer.print("");
-        writer.close();
-
-        //write MyData into the savedPlaylist.txt
-        try {
-            // Convenience Class for Writing character files
-            FileWriter playlistWriter;
-            playlistWriter = new FileWriter(playlistFile.getAbsoluteFile(), true);
-
-            //Write text
-            BufferedWriter bufferedWriter = new BufferedWriter(playlistWriter);
-            bufferedWriter.write(myData);
-            bufferedWriter.close();
-
-            System.out.println("playlistFile saved at location: " + fileLocation + "\n" + "Data added: " + myData + "\n");
-
-        } catch (IOException e) {
-            System.out.println("Hmm... got an error while saving Playlist Data to file " + e.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        File playlistFile = super.generateFileAndDirectoryIfNotThere(fileLocation);
+        super.writeFile(myData, playlistFile);
     }
 
     @Override
-    //EFFECTS: read from savedPlaylist.txt
+    //MODIFIES: this
+    //EFFECTS: open a file from fileLocation and load it to this
     public void readFromFile(String fileLocation) {
-        File playlistFile = new File(fileLocation);
-        if (!playlistFile.exists()) {
-            log("The files does not exists.");
-        }
-
-        InputStreamReader isReader;
         try {
-            isReader = new InputStreamReader(new FileInputStream(playlistFile), "UTF-8");
-            JsonReader myReader = new JsonReader(isReader);
-            Playlist extractedPlaylist = gson.fromJson(myReader, Playlist.class);
-
+            File playlistFile = super.getFile(fileLocation);
+            Playlist extractedPlaylist = convertFileToPlaylist(playlistFile);
             playListName = extractedPlaylist.getPlayListName();
             listOfSongs = extractedPlaylist.getListOfSongs();
-
-            System.out.println("Playlist Name Loaded: " + extractedPlaylist.getPlayListName());
-            extractedPlaylist.print();
-
         } catch (Exception e) {
-            System.out.println("error load cache from file " + e.toString());
+            super.printLoadingErrorMessage(e);
         }
+        super.printLoadingSuccessMessage(fileLocation);
+    }
 
-        System.out.println("\n" + "Playlist Data loaded successfully from location: " + "\n" + fileLocation);
+    private Playlist convertFileToPlaylist(File playlistFile) throws UnsupportedEncodingException, FileNotFoundException {
+        InputStreamReader isReader = new InputStreamReader(new FileInputStream(playlistFile), "UTF-8");
+        JsonReader myReader = new JsonReader(isReader);
+        return gson.fromJson(myReader, Playlist.class);
     }
 
     @Override
@@ -251,17 +196,7 @@ public class Playlist extends AbstractReadableWritable implements Queueable {
         if (!originalSongs.equals(songsToBeCompared))
             return false;
 
-
-//        //Compare playlist songAddDates, !!! the add date will lead to the hashMap not being equal!!!
-//        HashMap<Song, Timestamp> dateMapToBeCompared = castedPlaylist.getSongAddDates();
-//        HashMap<Song, Timestamp> originalDateMap = this.getSongAddDates();
-//        if (!originalDateMap.equals(dateMapToBeCompared))
-//            return false;
-
-
         return true;
-
-
     }
 
     @Override

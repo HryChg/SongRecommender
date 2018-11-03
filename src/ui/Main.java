@@ -22,7 +22,7 @@ public class Main {
 
     private static String audioFilesLocation = "songs";
     private static PlaylistManager pm = new PlaylistManager();
-    private static Gson gson = new Gson();
+
 
 
 
@@ -33,7 +33,7 @@ public class Main {
             pm.saveMultipleAudioFilesToPlaylist(audioFilesLocation, mainPlaylist);
             mainPlaylist.print();
             pm.askEachSongStatus(mainPlaylist);
-            mainPlaylist.writeToFile(gson.toJson(mainPlaylist));
+            mainPlaylist.writeToFile(mainPlaylist.convertToGsonString());
         } catch (EmptyPlaylistException e){
             System.out.println("Not expected to fail");
         }

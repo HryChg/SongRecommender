@@ -109,11 +109,12 @@ public class testSong {
 
 
     @Test
-    public void testWriteToFile() throws IOException {
+    public void testWriteToFile() throws Exception {
         testSong.setIsFavorite(true);
         testSong.setLastPlayedDate(testTimeStampForWriteToFile);
         testSong.setPlayedTime(testTimeStampForWriteToFile);
-        testSong.writeToFile(gson.toJson(testSong));
+        String myData = testSong.convertToGsonString();
+        testSong.writeToFile(myData);
 
         //Convert the text file to lines
         Path filePath = Paths.get("savedFiles/savedSongs/September.txt");

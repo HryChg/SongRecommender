@@ -179,8 +179,7 @@ public class testPlaylist extends abstractTestPrint {
             p.addSong(lostInTheLight);
             p.addSong(islands);
 
-
-            p.writeToFile(gson.toJson(p));
+            p.writeToFile(p.convertToGsonString());
 
             //formatting the date
             SimpleDateFormat ft = new SimpleDateFormat("MMM d, yyyy h:mm:ss a");
@@ -218,7 +217,7 @@ public class testPlaylist extends abstractTestPrint {
     public void testWriteToFileEmptyPlaylistException(){
         try {
             p.setPlaylistName("testPlaylistWriteToFile");
-            p.writeToFile(gson.toJson(p));
+            p.writeToFile(p.convertToGsonString());
             fail("empty playlist should not have been able to be saved to a file");
         } catch (EmptyStringException e) {
             System.out.println("Oop. setPlaylistName detects an emptyString for playlistName");

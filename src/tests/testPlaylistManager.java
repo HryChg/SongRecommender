@@ -47,10 +47,5 @@ public class testPlaylistManager {
         } catch (NullPointerException e){
             fail("");
         }
-
-
-
-
-
     }
 }

@@ -70,7 +70,8 @@ public class testPrintable extends abstractTestPrint{
         String expectedOutput  = "Song Name: testSong\n" +
                 "Favorite:  false\n"+
                 "Hate:      false\n"+
-                "Error: lastPlayedDate and playedTime are null\n";
+                "Warning: LastPlayedDate or PlayedTime is null.\n";
+
 
         verifyPrint(testSong, expectedOutput);
     }

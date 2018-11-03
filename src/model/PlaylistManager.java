@@ -16,7 +16,7 @@ public class PlaylistManager {
 
 
     public PlaylistManager(){
-        AudioParser ap;
+
         currentTimeStamp = new Timestamp(0);
         scanner = new Scanner(System.in);
     }
