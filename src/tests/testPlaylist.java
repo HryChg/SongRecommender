@@ -270,35 +270,36 @@ public class testPlaylist extends abstractTestPrint {
         }
     }
 
-    @Test
-    public void testHashCode(){
-        //test if two empty playlists with same name generate same hashCode
-        Playlist p2 = new Playlist("testPlaylist");
-        assertEquals(p2.hashCode(), p.hashCode());
-
-        try {
-            //test if adding the same song will lead to same hashCode
-            p.addSong(september);
-            p2.addSong(september);
-            assertEquals(p2.hashCode(), p.hashCode());
-
-            p.addSong(lostInTheLight);
-            p2.addSong(lostInTheLight);
-            assertEquals(p2.hashCode(), p.hashCode());
-
-            //test if two playlists containing different songs generate same hashCode
-            p.addSong(islands);
-            assertNotEquals(p2.hashCode(), p.hashCode());
-
-            //test two playlist with different order of the same songs generate same hashCode
-            p2.addSong(laLaLand);
-            p2.addSong(islands);                       //p2: september, lostInTheLight, laLaLand, islands
-            p.addSong(laLaLand);     //p: september, lostInTheLight, islands, laLaLand
-            assertNotEquals(p2.hashCode(), p.hashCode());
-
-        }catch (AlreadyInPlaylistException e){
-            fail("");
-        }
-    }
+//    //YOU DON'T TET HASHCODE
+//    @Test
+//    public void testHashCode(){
+//        //test if two empty playlists with same name generate same hashCode
+//        Playlist p2 = new Playlist("testPlaylist");
+//        assertEquals(p2.hashCode(), p.hashCode());
+//
+//        try {
+//            //test if adding the same song will lead to same hashCode
+//            p.addSong(september);
+//            p2.addSong(september);
+//            assertEquals(p2.hashCode(), p.hashCode());
+//
+//            p.addSong(lostInTheLight);
+//            p2.addSong(lostInTheLight);
+//            assertEquals(p2.hashCode(), p.hashCode());
+//
+//            //test if two playlists containing different songs generate same hashCode
+//            p.addSong(islands);
+//            assertNotEquals(p2.hashCode(), p.hashCode());
+//
+//            //test two playlist with different order of the same songs generate same hashCode
+//            p2.addSong(laLaLand);
+//            p2.addSong(islands);                       //p2: september, lostInTheLight, laLaLand, islands
+//            p.addSong(laLaLand);     //p: september, lostInTheLight, islands, laLaLand
+//            assertNotEquals(p2.hashCode(), p.hashCode());
+//
+//        }catch (AlreadyInPlaylistException e){
+//            fail("");
+//        }
+//    }
 
 }

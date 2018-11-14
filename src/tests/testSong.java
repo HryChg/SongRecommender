@@ -170,13 +170,14 @@ public class testSong {
         assertTrue(testSong.equals(testSongDifferentObject));
     }
 
-    @Test
-    public void testHashCode(){
-        Song testSongDifferentObject = new Song("September");
-        assertEquals(testSong.hashCode(), testSongDifferentObject.hashCode());
-
-
-    }
+    //YOU DONT TEST HASHCODE
+//    @Test
+//    public void testHashCode(){
+//        Song testSongDifferentObject = new Song("September");
+//        assertEquals(testSong.hashCode(), testSongDifferentObject.hashCode());
+//
+//
+//    }
 
     @Test
     public void testAddPlaylist(){
