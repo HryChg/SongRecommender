@@ -225,5 +225,10 @@ public class Song extends ReadableWritable implements Printable, Queueable {
         }
     }
 
+    @Override
+    public String toString(){
+        return songName;
+    }
+
 
 }
