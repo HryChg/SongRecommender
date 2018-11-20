@@ -26,7 +26,7 @@ public class Song extends ReadableWritable implements Printable, Queueable {
     //CONSTRUCTORS
     public Song(String name) {
         this.songName = name;
-        this.associatedPlaylists = new HashSet<>();
+
     }
 
     //SETTERS

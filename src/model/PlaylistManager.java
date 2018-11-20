@@ -1,6 +1,7 @@
 package model;
 
 import exceptions.AlreadyInPlaylistException;
+import exceptions.EmptyPlaylistException;
 import exceptions.NotAudioFileException;
 
 import javax.sound.midi.Soundbank;
@@ -15,20 +16,18 @@ public class PlaylistManager {
     private Scanner scanner;
 
 
-    public PlaylistManager(){
+    public PlaylistManager() {
 
         currentTimeStamp = new Timestamp(0);
         scanner = new Scanner(System.in);
     }
 
 
-
-
     //MODIFIES: playlist
     //EFFECTS: open multiple audio files under specified directory, convert each AudioFiles to Song and Add to Playlist.
     //     skip files that are not of audio format or are already in playlist.
     //     Throw NullPointerException if filesLocation not exists.
-    public void saveMultipleAudioFilesToPlaylist(String filesLocation, Playlist playlist) throws NullPointerException{
+    public void saveMultipleAudioFilesToPlaylist(String filesLocation, Playlist playlist) throws NullPointerException {
         File dir = new File(filesLocation);
 
         if (dir.isDirectory()) {
@@ -38,9 +37,9 @@ public class PlaylistManager {
                     Song parsedSong = ap.parseFileToSong(file);
                     playlist.addSong(parsedSong);
                 } catch (NotAudioFileException e) {
-                    System.out.println("Detected a file that is not audio: "+file.getName());
+                    System.out.println("Detected a file that is not audio: " + file.getName());
                     System.out.println("Skipping to the next file... \n");
-                } catch (AlreadyInPlaylistException e){
+                } catch (AlreadyInPlaylistException e) {
                     System.out.println(file.getName() + " is already in playlist.");
                     System.out.println("Skipping to the next file... \n");
                 }
@@ -50,7 +49,7 @@ public class PlaylistManager {
             throw new NullPointerException();
         }
 
-        System.out.println("Audio Files transfer to playlist: "+playlist.getPlayListName()+" completed. \n");
+        System.out.println("Audio Files transfer to playlist: " + playlist.getPlayListName() + " completed. \n");
 
     }
 
@@ -91,6 +90,23 @@ public class PlaylistManager {
         }
 
         System.out.println("Number of Songs Updated: " + countSongUpdated);
+
+    }
+
+
+    //MODIFIES: database
+    //EFFETCS: update dataBase with new mp3 files
+    //TODO: the mp3 files I thrown in has no metadata
+    public void updateDatabase(String databasePath, String newFilePath) {
+        try {
+            Playlist database = new Playlist("Song Database");
+            database.readFromFile(databasePath);
+            saveMultipleAudioFilesToPlaylist(newFilePath, database);
+            database.writeToFile(database.convertToGsonString());
+        } catch (EmptyPlaylistException e) {
+            e.printStackTrace();
+        }
+
 
     }
 

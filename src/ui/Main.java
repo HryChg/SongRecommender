@@ -1,20 +1,7 @@
 package ui;
 
-import Observer.Observer;
-import com.google.gson.Gson;
-import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
-import exceptions.AlreadyInPlaylistException;
 import exceptions.EmptyPlaylistException;
-import exceptions.EmptyStringException;
-import exceptions.NotAudioFileException;
 import model.*;
-
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.Scanner;
 
 
 public class Main {
@@ -23,47 +10,23 @@ public class Main {
     private static PlaylistManager pm = new PlaylistManager();
 
 
-
-
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Playlist mainPlaylist = new Playlist("MainPlaylist");
 
-        try {
-            pm.saveMultipleAudioFilesToPlaylist(audioFilesLocation, mainPlaylist);
-            mainPlaylist.print();
-            pm.askEachSongStatus(mainPlaylist);
-            mainPlaylist.writeToFile(mainPlaylist.convertToGsonString());
 
+//        pm.saveMultipleAudioFilesToPlaylist(audioFilesLocation, mainPlaylist);
+//        mainPlaylist.print();
+//        pm.askEachSongStatus(mainPlaylist);
+//        mainPlaylist.writeToFile(mainPlaylist.convertToGsonString());
+        String mainPlaylistPath = "/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/" +
+                "GitHub Repo/projectw1_team997/savedFiles/savedPlaylists/MainPlaylist.txt";
+        String songPath = "/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/songs";
 
-            Playlist p = new Playlist("p");
-            p.readFromFile("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/savedFiles/savedPlaylists/MainPlaylist.txt");
+        pm.updateDatabase(mainPlaylistPath, songPath);
+        mainPlaylist.readFromFile(mainPlaylistPath);
+        mainPlaylist.print();
+        //pm.askEachSongStatus(mainPlaylist);
 
-        } catch (EmptyPlaylistException e){
-            System.out.println("Not expected to fail");
-        }
-
-//
-//
-//        //EXTRACT WEB DATA
-//        System.out.println("\n --------------- Now extracting web data!!! --------------- \n");
-//        System.out.println("Extracting...");
-//        try {
-//            String theURL = "https://www.ugrad.cs.ubc.ca/~cs210/2018w1/welcomemsg.html";
-//
-//            WebParser webParser = new WebParser();
-//            Observer onelineReader1 = new OnlineReader();
-//
-//            //adding observer to subject
-//            webParser.addObserver(onelineReader1);
-//
-//            //perform webdata parsing
-//            StringBuilder sb = webParser.ExtractWebData(theURL);
-//
-//            System.out.println("\nHere is the Web Data:");
-//            System.out.println(sb);
-//        } catch (IOException ioe){
-//            ioe.printStackTrace();
-//        }
 
 
     }

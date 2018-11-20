@@ -101,7 +101,7 @@ public class JavafxSample extends Application {
         playButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                //once clicked, do sth in here
+
                 playButton.setText("Clicked!");
             }
         });
@@ -154,17 +154,17 @@ public class JavafxSample extends Application {
 
 
 
+
         /*---------------------------
          * JAVA FX Media Player
          *---------------------------*/
         //Java FX Media PLayer
         //TODO: HELP!!!! Media PLayer is not playing sound. I am almost certain that there is sth wrong with my path format
 
-
-//        String path = "resources/sounds/Azrael.mp3";
-//        Media media = new Media(new File(path).toURI().toString());
-//        MediaPlayer mediaPlayer = new MediaPlayer(media);
-//        mediaPlayer.play();
+        String path = "resources/Azrael.mp3";
+        Media media = new Media(new File(path).toURI().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.play();
 
 //        try {
 //            String path = new File("songs/Azrael.mp3").getAbsolutePath();
@@ -208,7 +208,7 @@ public class JavafxSample extends Application {
 
 
 
-    
+
 
     /*---------------------------
      * HELPERS
@@ -230,7 +230,6 @@ public class JavafxSample extends Application {
 
     //EFFECTS: open existing song database
     private List<Song> getDataBase(){
-        PlaylistManager pm = new PlaylistManager();
         Playlist p = new Playlist("Song Database");
         p.readFromFile("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/savedFiles/savedPlaylists/MainPlaylist.txt");
         return p.getListOfSongs();
