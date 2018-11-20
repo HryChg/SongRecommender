@@ -45,7 +45,7 @@ public class testPlaylist extends abstractTestPrint {
     public void testPlaylist() {
         Playlist testP = new Playlist("testPlaylist");
         assertTrue(testP.getListOfSongs().isEmpty());
-        assertTrue(testP.getSongAddDates().isEmpty());
+
     }
 
     @Test
@@ -121,7 +121,7 @@ public class testPlaylist extends abstractTestPrint {
 
         assertEquals(p.getSize(), 1);
         assertTrue(p.contains(september));
-        assertEquals(p.getSongAddDates().get(september), testTimestamp);
+
     }
 
     @Test
@@ -188,11 +188,7 @@ public class testPlaylist extends abstractTestPrint {
             String expectedOutput = "{\"playListName\":\"testPlaylistWriteToFile\",\"listOfSongs\":" +
                     "[{\"songName\":\"September\",\"isFavorite\":false,\"isHate\":false}," +
                     "{\"songName\":\"LostInTheLight\",\"isFavorite\":false,\"isHate\":false}," +
-                    "{\"songName\":\"Islands\",\"isFavorite\":false,\"isHate\":false}]," +
-                    "\"songAddDates\":{" +
-                    "\"model.Song@fe7514b1\":\"" + ft.format(testTimestamp) +"\"," +
-                    "\"model.Song@79371ce\":\""  + ft.format(testTimestamp) +"\"," +
-                    "\"model.Song@e003e0de\":\"" + ft.format(testTimestamp) +"\"}}";
+                    "{\"songName\":\"Islands\",\"isFavorite\":false,\"isHate\":false}]}";
 
             Path filePath = Paths.get("savedFiles/savedPlaylists/testPlaylistWriteToFile.txt");
             List<String> lines = Files.readAllLines(filePath);

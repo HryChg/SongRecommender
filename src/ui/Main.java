@@ -33,6 +33,11 @@ public class Main {
             mainPlaylist.print();
             pm.askEachSongStatus(mainPlaylist);
             mainPlaylist.writeToFile(mainPlaylist.convertToGsonString());
+
+
+            Playlist p = new Playlist("p");
+            p.readFromFile("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/savedFiles/savedPlaylists/MainPlaylist.txt");
+
         } catch (EmptyPlaylistException e){
             System.out.println("Not expected to fail");
         }

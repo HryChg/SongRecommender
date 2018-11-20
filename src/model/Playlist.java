@@ -24,7 +24,7 @@ public class Playlist extends ReadableWritable implements Queueable, Printable{
     public Playlist(String name) {
         this.playListName = name;
         this.listOfSongs = new ArrayList<>();
-        this.songAddDates = new HashMap<>();
+
     }
 
     // MODIFIES: this
@@ -44,9 +44,7 @@ public class Playlist extends ReadableWritable implements Queueable, Printable{
         return this.listOfSongs;
     }
 
-    public HashMap<Song, Timestamp> getSongAddDates() {
-        return songAddDates;
-    }
+
 
     public int getSize() {
         return this.listOfSongs.size();
@@ -72,9 +70,8 @@ public class Playlist extends ReadableWritable implements Queueable, Printable{
             throw new AlreadyInPlaylistException();
         } else {
             this.listOfSongs.add(song);
-            this.songAddDates.put(song, new Timestamp(new Date().getTime()));
-            song.addAssociatedPlaylist(this);
-            //System.out.println(song.getSongName()+" added.");
+
+
         }
     }
 
@@ -209,9 +206,7 @@ public class Playlist extends ReadableWritable implements Queueable, Printable{
         for (Song song : listOfSongs) {
             hashCode = 31 * hashCode + (song == null ? 0 : song.hashCode());
         }
-        for (Song song : songAddDates.keySet()) {
-            hashCode = 31 * hashCode + (songAddDates.get(song) == null ? 0 : songAddDates.get(song).hashCode());
-        }
+
         return hashCode;
     }
 

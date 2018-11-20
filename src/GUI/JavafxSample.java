@@ -11,7 +11,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
@@ -145,7 +144,9 @@ public class JavafxSample extends Application {
          * LEFT COLUMN
          *---------------------------*/
         //TODO: 1. Click songs name to play that song
-        List<Song> list = getAllSongs();
+        //List<Song> list = getAllFiles();
+        List<Song> list = getDataBase();
+
         ObservableList<Song> allSongs = FXCollections.observableArrayList(list);
         ListView<Song> listView = new ListView<>();
         listView.setItems(allSongs);
@@ -158,21 +159,28 @@ public class JavafxSample extends Application {
          *---------------------------*/
         //Java FX Media PLayer
         //TODO: HELP!!!! Media PLayer is not playing sound. I am almost certain that there is sth wrong with my path format
-        try {
-            String path = new File("songs/Azrael.mp3").getAbsolutePath();
-            Media me = new Media(new File(path).toURI().toString());
 
-            MediaPlayer mp = new MediaPlayer(me);
-            mp.play();
-        } catch (Exception e) {
-            System.out.println(e.getCause());
-        }
+
+//        String path = "resources/sounds/Azrael.mp3";
+//        Media media = new Media(new File(path).toURI().toString());
+//        MediaPlayer mediaPlayer = new MediaPlayer(media);
+//        mediaPlayer.play();
+
+//        try {
+//            String path = new File("songs/Azrael.mp3").getAbsolutePath();
+//            Media me = new Media(new File(path).toURI().toString());
+//
+//            MediaPlayer mp = new MediaPlayer(me);
+//            mp.play();
+//        } catch (Exception e) {
+//            System.out.println(e.getCause());
+//        }
 
 
         /*---------------------------
          * MediaView on Current Song being played
          *---------------------------*/
-        //TODO: Build the Current Playing Song View
+        //TODO: Build the Current Playing Song View probabliy something with a media view
 
 
 
@@ -191,8 +199,20 @@ public class JavafxSample extends Application {
     }
 
 
+    //MAIN
+    public static void main(String args[]) {
+        launch(args);
+    }
 
-    //HELPERS
+
+
+
+
+    
+
+    /*---------------------------
+     * HELPERS
+     *---------------------------*/
     private Button createButton(String name, Double x, Double y) {
         Button b = new Button(name);
         b.setLayoutX(x);
@@ -200,18 +220,21 @@ public class JavafxSample extends Application {
         return b;
     }
 
-    private List<Song> getAllSongs() {
+    //EFFECTS: open multiple fresh new files
+    private List<Song> getAllFiles() {
         PlaylistManager pm = new PlaylistManager();
         Playlist p = new Playlist("");
         pm.saveMultipleAudioFilesToPlaylist("songs", p);
         return p.getListOfSongs();
     }
 
-
-
-
-    //MAIN
-    public static void main(String args[]) {
-        launch(args);
+    //EFFECTS: open existing song database
+    private List<Song> getDataBase(){
+        PlaylistManager pm = new PlaylistManager();
+        Playlist p = new Playlist("Song Database");
+        p.readFromFile("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/savedFiles/savedPlaylists/MainPlaylist.txt");
+        return p.getListOfSongs();
     }
+
+
 }
