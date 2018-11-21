@@ -3,6 +3,7 @@ package GUI;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -11,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
@@ -20,7 +22,9 @@ import model.Playlist;
 import model.PlaylistManager;
 import model.Song;
 
-import java.io.File;
+
+
+import java.net.URL;
 import java.util.List;
 
 
@@ -30,12 +34,32 @@ public class JavafxSample extends Application {
     private int TITLE_FONT = 20;
 
 
+    static {
+        JFXPanel fxPanel = new JFXPanel();
+    }
+
+
+
     @Override
     public void start(Stage primaryStage) throws Exception {
+        /*---------------------------
+         * Music PLayer
+         *---------------------------*/
+        //Java FX Media PLayer
+        //TODO: HELP!!!! Media PLayer is not playing sound. I am almost certain if there is sth wrong with my path format
+        //TODO: TRY ADDINGA MEDIA VIEWER INTO THE SCENE TO MAKE IT WORK!
+        //TODO: TRY ARRAYLIST ON PATHS TO MAKE IT SKIPPABLE
+        //MEDIAPLAYER NO SOUND!!!
+
+//        String path = "resources/Azrael.mp3";
+//        Media media = new Media(new File(path).toURI().toString());
+//        MediaPlayer mediaPlayer = new MediaPlayer(media);
+//        mediaPlayer.play();
+
 
         /*---------------------------
-        * The Title  on the Scene
-        * ---------------------------*/
+         * The Title  on the Scene
+         * ---------------------------*/
         Text text = new Text();
         text.setFont(new Font(TITLE_FONT));
         text.setX((WIDTH / 3) * 1.6);
@@ -144,9 +168,7 @@ public class JavafxSample extends Application {
          * LEFT COLUMN
          *---------------------------*/
         //TODO: 1. Click songs name to play that song
-        //List<Song> list = getAllFiles();
         List<Song> list = getDataBase();
-
         ObservableList<Song> allSongs = FXCollections.observableArrayList(list);
         ListView<Song> listView = new ListView<>();
         listView.setItems(allSongs);
@@ -155,26 +177,8 @@ public class JavafxSample extends Application {
 
 
 
-        /*---------------------------
-         * JAVA FX Media Player
-         *---------------------------*/
-        //Java FX Media PLayer
-        //TODO: HELP!!!! Media PLayer is not playing sound. I am almost certain that there is sth wrong with my path format
 
-        String path = "resources/Azrael.mp3";
-        Media media = new Media(new File(path).toURI().toString());
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.play();
 
-//        try {
-//            String path = new File("songs/Azrael.mp3").getAbsolutePath();
-//            Media me = new Media(new File(path).toURI().toString());
-//
-//            MediaPlayer mp = new MediaPlayer(me);
-//            mp.play();
-//        } catch (Exception e) {
-//            System.out.println(e.getCause());
-//        }
 
 
         /*---------------------------
@@ -199,17 +203,6 @@ public class JavafxSample extends Application {
     }
 
 
-    //MAIN
-    public static void main(String args[]) {
-        launch(args);
-    }
-
-
-
-
-
-
-
     /*---------------------------
      * HELPERS
      *---------------------------*/
@@ -229,10 +222,16 @@ public class JavafxSample extends Application {
     }
 
     //EFFECTS: open existing song database
-    private List<Song> getDataBase(){
+    private List<Song> getDataBase() {
         Playlist p = new Playlist("Song Database");
         p.readFromFile("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/savedFiles/savedPlaylists/MainPlaylist.txt");
         return p.getListOfSongs();
+    }
+
+
+    //MAIN
+    public static void main(String args[]) {
+        launch(args);
     }
 
 
