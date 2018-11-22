@@ -1,4 +1,5 @@
-package model;
+package model.MusicPlayer;
+
 
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.AudioDevice;
@@ -7,7 +8,7 @@ import javazoom.jl.player.Player;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-public class InternalPlayer {
+public class InternalPlayer{
 
     private final static int NOTSTARTED = 0;
     private final static int PLAYING = 1;
@@ -109,14 +110,17 @@ public class InternalPlayer {
                         playerLock.wait();
                     } catch (final InterruptedException e) {
                         // terminate player
-                        //notify
                         break;
                     }
                 }
             }
         }
-        //notify
         close();
+    }
+
+
+    public Boolean isComplete(){
+        return player.isComplete();
     }
 
     /**
@@ -132,6 +136,9 @@ public class InternalPlayer {
             // ignore, we are terminating anyway
         }
     }
+
+
+
 
     // demo how to use
     public static void main(String[] argv) {
