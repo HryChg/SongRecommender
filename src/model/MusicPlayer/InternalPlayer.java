@@ -118,7 +118,6 @@ public class InternalPlayer{
         close();
     }
 
-
     public Boolean isComplete(){
         return player.isComplete();
     }
@@ -136,8 +135,6 @@ public class InternalPlayer{
             // ignore, we are terminating anyway
         }
     }
-
-
 
 
     // demo how to use

@@ -12,8 +12,11 @@ import java.util.ArrayList;
 public class MusicPlayer {
     private InternalPlayer internalPlayer;
     private ArrayList<FileInputStream> actualMP3s;
-
     private Thread t;
+    private boolean skipSong = false;
+
+
+
 
 
     public MusicPlayer(Playlist playlist) {
@@ -32,7 +35,7 @@ public class MusicPlayer {
 
 
     public void play() {
-        final Runnable r = new Runnable() {
+        Runnable r = new Runnable() {
             @Override
             public void run() {
                 try {
@@ -43,10 +46,8 @@ public class MusicPlayer {
             }
         };
 
-        Thread t = new Thread(r);
-        t.setPriority(Thread.NORM_PRIORITY);
+        t = new Thread(r);
         t.start();
-
     }
 
     private void playThread(ArrayList<FileInputStream> actualMP3s) throws JavaLayerException {
@@ -55,11 +56,15 @@ public class MusicPlayer {
             internalPlayer = new InternalPlayer(fis);
             internalPlayer.play();
 
-            //pause for loop until the single song is done playing
-            Boolean pauseOnForLoop = true;
-            while (pauseOnForLoop) {
-                if (internalPlayer.isComplete()) {
-                    pauseOnForLoop = false;
+
+
+
+            while (true) {
+                if (internalPlayer.isComplete() || skipSong) {
+                    internalPlayer.close();
+                    skipSong = false;
+                    //move on to the next song
+                    break;
                 }
 
             }
@@ -69,25 +74,12 @@ public class MusicPlayer {
 
     public void pause() {
         internalPlayer.pause();
-
     }
 
-    public void stop() {
-        //todo close the entire player
-
-
-    }
+    public void stop() { internalPlayer.stop();}
 
     public void skip() {
-        //TODO. Skip a song
-
-        internalPlayer.close();
-        try {
-            internalPlayer.play();
-        } catch (JavaLayerException e) {
-            e.printStackTrace();
-        }
-
+        skipSong = true;
     }
 
 
@@ -104,18 +96,19 @@ public class MusicPlayer {
             MusicPlayer musicPlayer = new MusicPlayer(p);
             musicPlayer.play();
 
-            //this doesnt work, as musicPLayer.play is running before pause. Not simultaneously.
-            Thread.sleep(5000);
-            musicPlayer.pause();
+//            Thread.sleep(5000);
+//            musicPlayer.pause();
+//
+//            Thread.sleep(5000);
+//            musicPlayer.play();
 
             Thread.sleep(5000);
-            musicPlayer.play();
-
-            //TODO stop is not working!!!!!!
-            Thread.sleep(5000);
+            //TODO skip is not working
             musicPlayer.skip();
+            //musicPlayer.stop();
 
-
+            
+            Thread.sleep(5000);
 
         } catch (Exception e) {
             e.printStackTrace();
