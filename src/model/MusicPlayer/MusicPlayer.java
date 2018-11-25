@@ -13,34 +13,56 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class MusicPlayer {
+    private static MusicPlayer firstInstance = null; //Singleton Pattern
+
+
     private InternalPlayer internalPlayer;
     private ArrayList<FileInputStream> actualMP3s;
-    private Playlist currentPlaylist;
+    private Playlist currentPlaylist = new Playlist("MusicPlayer Playlist");
     private Thread t;
     private boolean skipSong = false;
     private boolean stopPlayer = false;
-    private boolean pausePlayer = false;
 
-    public MusicPlayer(Song song) {
+    //Singleton Pattern
+    private MusicPlayer(){}
+    public static MusicPlayer getInstance(){
+        if (firstInstance == null){
+            firstInstance = new MusicPlayer();
+        }
+        return firstInstance;
+    }
+
+    public static MusicPlayer refreshInstance(){
+        firstInstance = null;
+        return firstInstance = new MusicPlayer();
+    }
+
+    public void setSong(Song song) {
         setPlayedTimeAndLastPlayedDate(song);
-
         actualMP3s = new ArrayList<>();
         addSongToActualMP3s(song);
     }
 
-    private void setPlayedTimeAndLastPlayedDate(Song song) {
-        song.setPlayedTime(new Timestamp(new Date().getTime()));
-        song.setLastPlayedDate(new Timestamp(new Date().getTime()));
-    }
+    public void setPlaylist(Playlist playlist) {
+        for (Song song: playlist.getListOfSongs()){
+            currentPlaylist.addSong(song);
+        }
 
-    public MusicPlayer(Playlist playlist) {
-        currentPlaylist = playlist;
-
+        //currentPlaylist = playlist;
         //loading playlistSong to actualMP3
         actualMP3s = new ArrayList<>();
         for (Song song : playlist.getListOfSongs()) {
             addSongToActualMP3s(song);
         }
+    }
+
+    public Playlist getPlaylist(){
+        return currentPlaylist;
+    }
+
+    private void setPlayedTimeAndLastPlayedDate(Song song) {
+        song.setPlayedTime(new Timestamp(new Date().getTime()));
+        song.setLastPlayedDate(new Timestamp(new Date().getTime()));
     }
 
     private void addSongToActualMP3s(Song song) {
@@ -54,10 +76,12 @@ public class MusicPlayer {
     }
 
     public void initializeThreadAndPlay() {
-        Runnable r = new Runnable() {
+
+        final Runnable r = new Runnable() {
             @Override
             public void run() {
                 try {
+                    System.out.println("Music Player initialized.....");
                     playThread(actualMP3s);
                 } catch (JavaLayerException e) {
                     e.printStackTrace();
@@ -68,9 +92,9 @@ public class MusicPlayer {
         t.start();
 
         //print out thread name based the seocond it was created
-//        Long name = new Date().getTime();
-//        t.setName(Long.toString(name));
-//        System.out.println("\nCurrent Thread Name: " + t.getName() + "\n");
+        Long name = new Date().getTime();
+        t.setName(Long.toString(name));
+        System.out.println("\nCurrent Thread Name: " + t.getName() + "\n");
     }
 
     private void playThread(ArrayList<FileInputStream> actualMP3s) throws JavaLayerException {
@@ -96,6 +120,7 @@ public class MusicPlayer {
 
                 if (stopPlayer) {
                     internalPlayer.close();
+                    stopPlayer = false;
                     break outerloop;
                 }
             }
@@ -128,38 +153,49 @@ public class MusicPlayer {
     }
 
 
-    //testing out
-    public static void main(String[] args) {
-        PlaylistManager pm = new PlaylistManager();
-
-        Playlist playlist = new Playlist("TestingDeleteThisWhenYouCan");
-        pm.saveMultipleAudioFilesToPlaylist("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/songs", playlist);
-        playlist.print();
-
-        //loading the playlist to music player
-        MusicPlayer musicPlayer = new MusicPlayer(playlist);
-
-        try {
-            musicPlayer.initializeThreadAndPlay();
-
-            Thread.sleep(5000);
-            musicPlayer.pause();
-
-            Thread.sleep(5000);
-            musicPlayer.resume();
-
-            Thread.sleep(5000);
-            musicPlayer.skip();
-
-            Thread.sleep(5000);
-            musicPlayer.stop();
-
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-    }
+//    //testing out
+//    public static void main(String[] args) {
+//        PlaylistManager pm = new PlaylistManager();
+//
+//        Playlist playlist = new Playlist("TestingDeleteThisWhenYouCan");
+//        pm.saveMultipleAudioFilesToPlaylist("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/songs", playlist);
+//        playlist.print();
+//
+//        //loading the playlist to music player
+//        MusicPlayer musicPlayer = MusicPlayer.getInstance();
+//        musicPlayer.setPlaylist(playlist);
+//
+//
+//
+//        try {
+//            musicPlayer.initializeThreadAndPlay();
+//
+//            Thread.sleep(5000);
+//            musicPlayer.pause();
+//
+//            Thread.sleep(5000);
+//            musicPlayer.resume();
+//
+//            Thread.sleep(5000);
+//            musicPlayer.skip();
+//
+//            Thread.sleep(5000);
+//            musicPlayer.stop();
+//
+//
+//            //after stop the music. Refresh the instance to get it playing again
+//            musicPlayer = MusicPlayer.refreshInstance();
+//            musicPlayer.setPlaylist(playlist);
+//            Thread.sleep(5000);
+//            musicPlayer.initializeThreadAndPlay();
+//
+//
+//
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
 
 }

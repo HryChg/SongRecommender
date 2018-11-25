@@ -1,6 +1,5 @@
 package GUI;
 
-import exceptions.EmptyPlaylistException;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -13,7 +12,6 @@ import model.PlaylistManager;
 import model.Song;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -21,7 +19,9 @@ public class Controller implements Initializable {
     private Playlist dataBase = new Playlist("database");
     private Playlist currentQueue = new Playlist("currentQueue");
     private PlaylistManager pm = new PlaylistManager();
-    private MusicPlayer musicPlayer;
+    private MusicPlayer musicPlayer = MusicPlayer.getInstance();
+    private boolean musicPlayerInitialized = false;
+
 
     @FXML private ListView<Song> songListView = new ListView<>();
     @FXML private Label status;
@@ -41,6 +41,8 @@ public class Controller implements Initializable {
 
 
 
+
+
     //this is where you run your initialization when the window first open
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -53,29 +55,55 @@ public class Controller implements Initializable {
         //initializing status bar
         status.setText("Loaded Playlist");
 
+        System.out.println("The following is the current data base:");
         dataBase.print();
+        System.out.println("\n");
+
+
+
+        System.out.println("The following is the current music player queue:");
+        musicPlayer.getPlaylist().print();
+        System.out.println("\n");
+
+
     }
 
 
     public void playButtonClick(){
         status.setText("Play Button Clicked.");
-        //todo initializeThreadAndPlay music here
-        musicPlayer = new MusicPlayer(currentQueue);
+
+
+        if(musicPlayer.getPlaylist().getListOfSongs().isEmpty()){
+            status.setText("Current Queue is empty. Please select check box and hit submit button!");
+            return;
+        }
+
+
+        if (!musicPlayerInitialized){
+            musicPlayer.initializeThreadAndPlay();
+            musicPlayerInitialized = true;
+        } else{
+            musicPlayer.resume();
+        }
     }
 
     public void pauseButtonClick(){
         status.setText("Pause Button Clicked.");
-        //todo: pause music here
+        musicPlayer.pause();
     }
 
     public void skipButtonClick(){
         status.setText("Skip Button Clicked.");
-        //todo: skip music here
+        musicPlayer.skip();
     }
 
     public void stopButtonClick(){
         status.setText("Stop Button Clicked");
         //todo: stop muisc here
+        musicPlayer.stop();
+        musicPlayer = MusicPlayer.refreshInstance();
+        musicPlayer.setPlaylist(currentQueue);
+        musicPlayerInitialized = false;
     }
 
     public void submitButtonClick(){
@@ -90,16 +118,18 @@ public class Controller implements Initializable {
                 recentlyPlayedBox.isSelected(), lostSongBox.isSelected(), neverPlayedBox.isSelected(), allSongsBox.isSelected());
 
         currentQueue.print();
+        musicPlayer.setPlaylist(currentQueue);
     }
 
     //save the database before exiting
     //being called in Main class
     public void exitProcedure(){
-        try {
-            System.out.println("Saving to database...");
-            dataBase.writeToFile(dataBase.convertToGsonString());
-        } catch (EmptyPlaylistException e){
-            e.printStackTrace();
-        }
+        //todo comeback and tne turn this saving mode on
+//        try {
+//            System.out.println("Saving to database...");
+//            dataBase.writeToFile(dataBase.convertToGsonString());
+//        } catch (EmptyPlaylistException e){
+//            e.printStackTrace();
+//        }
     }
 }
