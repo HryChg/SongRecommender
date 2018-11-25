@@ -2,16 +2,14 @@ package GUI;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import model.MusicPlayer.MusicPlayer;
 import model.Playlist;
 import model.PlaylistManager;
 import model.Song;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -40,9 +38,6 @@ public class Controller implements Initializable {
     @FXML private Button submitButton;
 
 
-
-
-
     //this is where you run your initialization when the window first open
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -60,18 +55,19 @@ public class Controller implements Initializable {
         System.out.println("\n");
 
 
-
         System.out.println("The following is the current music player queue:");
         musicPlayer.getPlaylist().print();
         System.out.println("\n");
 
+        //allow list to select multiple songs
+        songListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
     }
 
-
     public void playButtonClick(){
-        status.setText("Play Button Clicked.");
+        musicPlayer.setPlaylist(currentQueue);
 
+        status.setText("Play Button Clicked.");
 
         if(musicPlayer.getPlaylist().getListOfSongs().isEmpty()){
             status.setText("Current Queue is empty. Please select check box and hit submit button!");
@@ -108,6 +104,18 @@ public class Controller implements Initializable {
 
     public void submitButtonClick(){
         status.setText("New Selections Made...");
+
+        List<Song> selectedSongsFromSongListView = songListView.getSelectionModel().getSelectedItems();
+        if (!selectedSongsFromSongListView.isEmpty()){
+            //clearing out the current queue
+            currentQueue = new Playlist("currentQueue");
+            for (Song song: selectedSongsFromSongListView){
+                currentQueue.addSong(song);
+            }
+            currentQueue.print();
+            return;
+        }
+
         handleOptions(favoriteBox, hateBox, recentlyPlayedBox, lostSongBox, neverPlayedBox, allSongsBox);
     }
 
@@ -118,7 +126,7 @@ public class Controller implements Initializable {
                 recentlyPlayedBox.isSelected(), lostSongBox.isSelected(), neverPlayedBox.isSelected(), allSongsBox.isSelected());
 
         currentQueue.print();
-        musicPlayer.setPlaylist(currentQueue);
+
     }
 
     //save the database before exiting
