@@ -12,8 +12,7 @@ public class Main extends Application {
     FXMLLoader loader;
     Controller controller;
     Parent root;
-
-
+    
     @Override
     public void start(Stage primaryStage) throws Exception {
         window = primaryStage;

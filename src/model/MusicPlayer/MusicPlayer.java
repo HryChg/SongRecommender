@@ -1,9 +1,9 @@
 package model.MusicPlayer;
 
 
-import exceptions.EmptyPlaylistException;
 import javazoom.jl.decoder.JavaLayerException;
 import model.Playlist;
+import model.PlaylistManager;
 import model.Song;
 
 import java.io.FileInputStream;
@@ -12,8 +12,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static java.lang.System.exit;
-
 public class MusicPlayer {
     private InternalPlayer internalPlayer;
     private ArrayList<FileInputStream> actualMP3s;
@@ -21,6 +19,7 @@ public class MusicPlayer {
     private Thread t;
     private boolean skipSong = false;
     private boolean stopPlayer = false;
+    private boolean pausePlayer = false;
 
     public MusicPlayer(Song song) {
         setPlayedTimeAndLastPlayedDate(song);
@@ -54,7 +53,7 @@ public class MusicPlayer {
         }
     }
 
-    public void play() {
+    public void initializeThreadAndPlay() {
         Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -65,21 +64,29 @@ public class MusicPlayer {
                 }
             }
         };
-
         t = new Thread(r);
         t.start();
+
+        //print out thread name based the seocond it was created
+//        Long name = new Date().getTime();
+//        t.setName(Long.toString(name));
+//        System.out.println("\nCurrent Thread Name: " + t.getName() + "\n");
     }
 
     private void playThread(ArrayList<FileInputStream> actualMP3s) throws JavaLayerException {
         //looping through actualMP3s and create new internalPlayer to for every MP3
         int index = 0;
+
+        outerloop:
         for (FileInputStream fis : actualMP3s) {
             Song song = currentPlaylist.getSong(index);
             setPlayedTimeAndLastPlayedDate(song);
             internalPlayer = new InternalPlayer(fis);
             internalPlayer.play();
 
+
             while (true) {
+
                 if (internalPlayer.isComplete() || skipSong) {
                     internalPlayer.close();
                     skipSong = false;
@@ -89,127 +96,71 @@ public class MusicPlayer {
 
                 if (stopPlayer) {
                     internalPlayer.close();
-                    return;
+                    break outerloop;
                 }
             }
         }
     }
 
+    public void resume() {
+        System.out.println("Music Player resumed.....");
+        try {
+            internalPlayer.play();
+        } catch (JavaLayerException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void pause() {
+        System.out.println("Music Player paused.....");
         internalPlayer.pause();
+
     }
 
     public void stop() {
+        System.out.println("Music Player stopped.....");
         stopPlayer = true;
     }
 
     public void skip() {
+        System.out.println("Music Player skip to next song.....");
         skipSong = true;
     }
 
-    public void restart() {
-        //todo find a way to restart the player
-
-    }
 
     //testing out
     public static void main(String[] args) {
+        PlaylistManager pm = new PlaylistManager();
 
-        Playlist p = new Playlist("p");
-        p.readFromFile("savedFiles/savedPlaylists/database.txt");
+        Playlist playlist = new Playlist("TestingDeleteThisWhenYouCan");
+        pm.saveMultipleAudioFilesToPlaylist("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/songs", playlist);
+        playlist.print();
 
-        MusicPlayer musicPlayer = new MusicPlayer(p);
-        musicPlayer.play();
+        //loading the playlist to music player
+        MusicPlayer musicPlayer = new MusicPlayer(playlist);
 
+        try {
+            musicPlayer.initializeThreadAndPlay();
 
-//            //play single song
-//            Song song9 = p.getSong(9);
-//            MusicPlayer musicPlayer = new MusicPlayer(song9);
-//            musicPlayer.play();
+            Thread.sleep(5000);
+            musicPlayer.pause();
 
+            Thread.sleep(5000);
+            musicPlayer.resume();
 
-        System.out.println("start testing");
+            Thread.sleep(5000);
+            musicPlayer.skip();
 
-
-        new java.util.Timer().schedule(
-                new java.util.TimerTask() {
-                    @Override
-                    public void run() {
-                        // your code here
-                        System.out.println("pause the player");
-                        musicPlayer.pause();
-                    }
-                },
-                5000
-        );
-
-        new java.util.Timer().schedule(
-                new java.util.TimerTask() {
-                    @Override
-                    public void run() {
-                        System.out.println("play the player again");
-                        musicPlayer.play();
-                    }
-                },
-                15000
-        );
-
-        new java.util.Timer().schedule(
-                new java.util.TimerTask() {
-                    @Override
-                    public void run() {
-                        System.out.println("skip a song");
-                        musicPlayer.skip();
-                    }
-                },
-                25000
-        );
+            Thread.sleep(5000);
+            musicPlayer.stop();
 
 
-
-
-        new java.util.Timer().schedule(
-                new java.util.TimerTask() {
-                    @Override
-                    public void run() {
-                        System.out.println("stop the player");
-                        musicPlayer.stop();
-                    }
-                },
-                35000
-        );
-
-        new java.util.Timer().schedule(
-                new java.util.TimerTask() {
-                    @Override
-                    public void run() {
-                        try {
-                            System.out.println("saving to data base");
-                            p.writeToFile(p.convertToGsonString());
-
-                            //force stop java virtual machine!!!
-                            exit(0);
-
-                        } catch (EmptyPlaylistException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                45000
-        );
-
-//        System.out.println("saving to data base");
-//        try {
-//            p.writeToFile(p.convertToGsonString());
-//        } catch (EmptyPlaylistException e) {
-//            e.printStackTrace();
-//        }
-
-
-
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 
 
 }
+

@@ -145,7 +145,7 @@ class InternalPlayer{
 //            InternalPlayer player = new InternalPlayer(input);
 //
 //            // start playing
-//            player.play();
+//            player.initializeThreadAndPlay();
 //
 //            // after 5 secs, pause
 //            Thread.sleep(5000);

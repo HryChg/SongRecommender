@@ -47,7 +47,7 @@ public class JavafxSample extends Application {
 //        String path = "resources/Azrael.mp3";
 //        Media media = new Media(new File(path).toURI().toString());
 //        MediaPlayer mediaPlayer = new MediaPlayer(media);
-//        mediaPlayer.play();
+//        mediaPlayer.initializeThreadAndPlay();
 
 
         /*---------------------------
@@ -160,7 +160,7 @@ public class JavafxSample extends Application {
         /*---------------------------
          * LEFT COLUMN
          *---------------------------*/
-        //TODO: 1. Click songs name to play that song
+        //TODO: 1. Click songs name to initializeThreadAndPlay that song
         List<Song> list = getDataBase();
         ObservableList<Song> allSongs = FXCollections.observableArrayList(list);
         ListView<Song> listView = new ListView<>();

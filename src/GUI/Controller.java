@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import model.MusicPlayer.MusicPlayer;
 import model.Playlist;
 import model.PlaylistManager;
 import model.Song;
@@ -20,6 +21,7 @@ public class Controller implements Initializable {
     private Playlist dataBase = new Playlist("database");
     private Playlist currentQueue = new Playlist("currentQueue");
     private PlaylistManager pm = new PlaylistManager();
+    private MusicPlayer musicPlayer;
 
     @FXML private ListView<Song> songListView = new ListView<>();
     @FXML private Label status;
@@ -57,7 +59,8 @@ public class Controller implements Initializable {
 
     public void playButtonClick(){
         status.setText("Play Button Clicked.");
-        //todo play music here
+        //todo initializeThreadAndPlay music here
+        musicPlayer = new MusicPlayer(currentQueue);
     }
 
     public void pauseButtonClick(){
@@ -89,10 +92,8 @@ public class Controller implements Initializable {
         currentQueue.print();
     }
 
-
-
-    //todo update the database in the end
-    //before exiting, update the data base
+    //save the database before exiting
+    //being called in Main class
     public void exitProcedure(){
         try {
             System.out.println("Saving to database...");
