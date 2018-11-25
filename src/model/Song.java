@@ -11,22 +11,20 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class Song extends ReadableWritable implements Printable, Queueable {
+public class Song extends ReadableWritable implements Printable {
     private String songName;
     private Boolean isFavorite = false;
     private Boolean isHate = false;   // whether user hates the song
     private Timestamp lastPlayedDate; // the date when the song is most recently played
     private Timestamp playedTime;     // the time of the day when song is played
-
-
-    private transient Set<Playlist> associatedPlaylists; //associated Playlist
+    private Timestamp addDate;
 
     private static Gson gson = new Gson(); //used to create or read files
 
     //CONSTRUCTORS
     public Song(String name) {
         this.songName = name;
-
+        this.addDate = new Timestamp(new Date().getTime());
     }
 
     //SETTERS
@@ -53,6 +51,10 @@ public class Song extends ReadableWritable implements Printable, Queueable {
         this.playedTime = timing;
     }
 
+    public Timestamp getAddDate() {
+        return addDate;
+    }
+
 
     //GETTERS
     public String getSongName() {
@@ -75,9 +77,7 @@ public class Song extends ReadableWritable implements Printable, Queueable {
         return playedTime;
     }
 
-    public Set<Playlist> getAssociatedPlaylists() {
-        return associatedPlaylists;
-    }
+
 
 
     //EFFECTS: return the last played date of the song in String Format (DayInWeek Year Month Day);
@@ -119,48 +119,6 @@ public class Song extends ReadableWritable implements Printable, Queueable {
     }
 
     @Override
-    // MODIFIES: savedQueue.txt
-    // EFFECTS: insertQueue the song into the savedQueue.txt
-    public void insertQueue() {
-        //TODO, come back and clean this up
-        String fileLocation = "savedFiles/savedQueue.txt";
-        File queueFile = new File(fileLocation);
-
-        // Create a file if it does not exists
-        if (!queueFile.exists()) {
-            try {
-                File directory = new File(queueFile.getParent());
-                if (!directory.exists()) {
-                    directory.mkdirs();
-                }
-                queueFile.createNewFile();
-
-            } catch (IOException e) {
-                System.out.println("Exception Occurred: " + e.toString());
-            }
-        }
-
-        try {
-            // Convenience Class for Writing character files
-            FileWriter songWriter;
-            songWriter = new FileWriter(queueFile.getAbsoluteFile(), true);
-
-            //Write text
-            BufferedWriter bufferedWriter = new BufferedWriter(songWriter);
-            bufferedWriter.write("\n" + "- " + getSongName());
-            bufferedWriter.close();
-
-            System.out.println("queueFile data saved at file location: " + fileLocation + "\n" + "Data Added: " + getSongName() + "\n");
-
-        } catch (FileNotFoundException e) {
-            System.out.println("Hey! File Not Found!");
-        } catch (IOException e) {
-            System.out.println("Hmm... got an error while saving inserting song ot queueFile: " + e.toString());
-        }
-
-    }
-
-    @Override
     //REQUIRES: myData needs to be in the format of GSON string
     //EFFECTS: save myData to a file under savedFiles/savedSongs with songName as fileName
     public void writeToFile(String myData) {
@@ -188,7 +146,6 @@ public class Song extends ReadableWritable implements Printable, Queueable {
         super.printLoadingSuccessMessage(fileLocation);
     }
 
-    //TODO, how can I rase this to the ReadableWritable Class?
     private Song convertFileToSong(File songFile) throws UnsupportedEncodingException, FileNotFoundException {
         InputStreamReader isReader = new InputStreamReader(new FileInputStream(songFile), "UTF-8");
         JsonReader myReader = new JsonReader(isReader);
@@ -211,18 +168,6 @@ public class Song extends ReadableWritable implements Printable, Queueable {
     //EFFECTS: return hashCode of the song based on songName
     public int hashCode() {
         return Objects.hashCode(songName);
-    }
-
-    public void addAssociatedPlaylist(Playlist playlist) {
-
-        if (!associatedPlaylists.contains(playlist)) {
-            associatedPlaylists.add(playlist);
-            try {
-                playlist.addSong(this);
-            } catch (AlreadyInPlaylistException e) {
-                //do nothing
-            }
-        }
     }
 
     @Override

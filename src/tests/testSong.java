@@ -179,11 +179,5 @@ public class testSong {
 //
 //    }
 
-    @Test
-    public void testAddPlaylist(){
-        Playlist testPlaylist = new Playlist("Hi");
-        testSong.addAssociatedPlaylist(testPlaylist);
-        assertTrue(testSong.getAssociatedPlaylists().contains(testPlaylist));
-        assertTrue(testPlaylist.getListOfSongs().contains(testSong));
-    }
+
 }

@@ -3,10 +3,13 @@ package model;
 import exceptions.AlreadyInPlaylistException;
 import exceptions.EmptyPlaylistException;
 import exceptions.NotAudioFileException;
+import javafx.print.PageLayout;
 
 import javax.sound.midi.Soundbank;
 import java.io.File;
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -14,7 +17,6 @@ public class PlaylistManager {
     private AudioParser ap;
     private Timestamp currentTimeStamp;
     private Scanner scanner;
-
 
     public PlaylistManager() {
 
@@ -35,12 +37,15 @@ public class PlaylistManager {
                 try {
                     ap = new AudioParser(); //remember to always create a new parser for each new file!
                     Song parsedSong = ap.parseFileToSong(file);
+
+                    if (playlist.contains(parsedSong)) {
+                        System.out.println(file.getName() + " is already in playlist.");
+                        System.out.println("Skipping to the next file... \n");
+                    }
+
                     playlist.addSong(parsedSong);
                 } catch (NotAudioFileException e) {
                     System.out.println("Detected a file that is not audio: " + file.getName());
-                    System.out.println("Skipping to the next file... \n");
-                } catch (AlreadyInPlaylistException e) {
-                    System.out.println(file.getName() + " is already in playlist.");
                     System.out.println("Skipping to the next file... \n");
                 }
             }
@@ -106,6 +111,76 @@ public class PlaylistManager {
         } catch (EmptyPlaylistException e) {
             e.printStackTrace();
         }
+
+
+    }
+
+
+    public Playlist filterFavoritePlaylist(Playlist playlist) {
+//        Playlist p = new Playlist("Favorite Songs");
+//        for (Song song : playlist.getListOfSongs()) {
+//            if (song.getIsFavorite()) {
+//                p.addSong(song);
+//            }
+//        }
+//        return p;
+        //return filter(playlist, "favorite");
+        return filter(playlist, "recentlyPlayed");
+    }
+
+    private Playlist filter(Playlist playlist, String songType) {
+        Playlist p = new Playlist("");
+
+
+
+        if (songType.equals("favorite")) {
+            for (Song song : playlist.getListOfSongs()) {
+                if (song.getIsFavorite()) {
+                    p.addSong(song);
+                }
+            }
+        }
+
+        if (songType.equals("hate")) {
+            for (Song song : playlist.getListOfSongs()) {
+                if (song.getIsHate()) {
+                    p.addSong(song);
+                }
+            }
+        }
+
+        if (songType.equals("recentlyPlayed")) {
+            Timestamp todayTimeStamp = new Timestamp(new Date().getTime());
+            for (Song song : playlist.getListOfSongs()) {
+                //if the songs is played just in the last three days
+                Long songPlayedDate = song.getLastPlayedDate().getTime();
+                if ( songPlayedDate.equals(null)){
+                    //do nothing
+                }
+                if (todayTimeStamp.getTime() - 2.592e+8 < song.getLastPlayedDate().getTime()) {
+                    p.addSong(song);
+                }
+            }
+        }
+
+        return p;
+
+
+    }
+
+
+    public static void main(String[] args) {
+        PlaylistManager pm = new PlaylistManager();
+
+
+        //print out favorite songs in data base
+        Playlist temp = new Playlist("temp");
+        temp.readFromFile("savedFiles/savedPlaylists/MainPlaylist.txt");
+        temp.print();
+
+
+        Playlist p = pm.filterFavoritePlaylist(temp);
+        p.print();
 
 
     }

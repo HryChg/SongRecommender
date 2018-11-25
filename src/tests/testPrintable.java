@@ -21,7 +21,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class testPrintable extends abstractTestPrint{
+public class testPrintable extends abstractTestPrint {
     Timestamp testTS = new Timestamp(new Date().getTime());
 
     private Song september = new Song("September");
@@ -29,9 +29,8 @@ public class testPrintable extends abstractTestPrint{
     private Song islands = new Song("Islands");
 
 
-
     @Test
-    public void testPrintSong(){
+    public void testPrintSong() {
 
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
@@ -46,17 +45,17 @@ public class testPrintable extends abstractTestPrint{
         SimpleDateFormat TimeFormat = new SimpleDateFormat("kk:mm:ss");
 
         //Now you have to validate the output.
-        String expectedOutput  = "Song Name: testSong\n" +
-                "Favorite:  false\n"+
-                "Hate:      false\n"+
-                "Last Played Date: "+DateFormat.format(testTS)+"\n"+
-                "Last Played Time: "+TimeFormat.format(testTS)+"\n";
+        String expectedOutput = "Song Name: testSong\n" +
+                "Favorite:  false\n" +
+                "Hate:      false\n" +
+                "Last Played Date: " + DateFormat.format(testTS) + "\n" +
+                "Last Played Time: " + TimeFormat.format(testTS) + "\n";
 
         verifyPrint(testSong, expectedOutput);
     }
 
     @Test
-    public void testPrintSongNullDate(){
+    public void testPrintSongNullDate() {
 
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
@@ -67,9 +66,9 @@ public class testPrintable extends abstractTestPrint{
 
 
         //Now you have to validate the output.
-        String expectedOutput  = "Song Name: testSong\n" +
-                "Favorite:  false\n"+
-                "Hate:      false\n"+
+        String expectedOutput = "Song Name: testSong\n" +
+                "Favorite:  false\n" +
+                "Hate:      false\n" +
                 "Warning: LastPlayedDate or PlayedTime is null.\n";
 
 
@@ -87,11 +86,7 @@ public class testPrintable extends abstractTestPrint{
     public void printPlayListOneSong() {
 
         Playlist p = new Playlist("testPlaylist");
-        try {
-            p.addSong(september);
-        } catch (AlreadyInPlaylistException e) {
-            fail("");
-        }
+        p.addSong(september);
 
         String expectedOutput = "Current Playlist: testPlaylist\n- September\n";
         verifyPrint(p, expectedOutput);
@@ -101,13 +96,11 @@ public class testPrintable extends abstractTestPrint{
     @Test
     public void printPlayListThreeSong() {
         Playlist p = new Playlist("testPlaylist");
-        try {
-            p.addSong(september);
-            p.addSong(lostInTheLight);
-            p.addSong(islands);
-        } catch (AlreadyInPlaylistException e){
-            fail("");
-        }
+
+        p.addSong(september);
+        p.addSong(lostInTheLight);
+        p.addSong(islands);
+
         String expectedOutput = "Current Playlist: testPlaylist\n- September\n- LostInTheLight\n- Islands\n";
         verifyPrint(p, expectedOutput);
     }

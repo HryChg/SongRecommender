@@ -75,13 +75,11 @@ public class testPlaylist extends abstractTestPrint {
     @Test
     public void testGetSongThreeSongPlaylist() {
 
-        try {
-            p.addSong(september);
-            p.addSong(lostInTheLight);
-            p.addSong(islands);
-        } catch (AlreadyInPlaylistException e) {
-            fail("Fail: AlreadyInPlaylistException is not supposed to happen");
-        }
+
+        p.addSong(september);
+        p.addSong(lostInTheLight);
+        p.addSong(islands);
+
 
         assertEquals(p.getSize(), 3);
 
@@ -94,8 +92,6 @@ public class testPlaylist extends abstractTestPrint {
     public void testAddSongNull() {
         try {
             p.addSong(nullSong);
-            fail("");
-        } catch (AlreadyInPlaylistException e) {
             fail("");
         } catch (NullPointerException e) {
 
@@ -113,8 +109,6 @@ public class testPlaylist extends abstractTestPrint {
         try {
             p.addSong(september);
 
-        } catch (AlreadyInPlaylistException e) {
-            fail("AlreadyInPlaylistException is not supposed to happen");
         } catch (NullPointerException e) {
             fail("NullPointerException is not supposed to happen");
         }
@@ -136,8 +130,6 @@ public class testPlaylist extends abstractTestPrint {
             p.addSong(islands);
             assertEquals(p.getSize(), 3);
             assertTrue(p.contains(islands));
-        } catch (AlreadyInPlaylistException e) {
-            fail("Fail: AlreadyInPlaylistException is not supposed to happen");
         } catch (NullPointerException e) {
             fail("Fail: NullPointerException is not supposed to happen");
         }
@@ -151,27 +143,18 @@ public class testPlaylist extends abstractTestPrint {
             p.addSong(lostInTheLight);
             p.addSong(islands);
             assertEquals(p.getSize(), 3);
-        } catch (AlreadyInPlaylistException e) {
-            fail("");
         } catch (NullPointerException e) {
             fail("");
         }
 
-        try {
-            p.addSong(islands);
-            fail("Fail: Supposed to catch AlreadyInPlaylistException");
-        } catch (AlreadyInPlaylistException e) {
 
-        } catch (NullPointerException e) {
-            fail("Fail: NullPointerException is not supposed to happend");
-        }
-
+        p.addSong(islands);
         assertEquals(p.getSize(), 3);
         assertTrue(p.contains(islands));
     }
 
     @Test
-    public void testWriteToFile(){
+    public void testWriteToFile() {
         try {
             p.setPlaylistName("testPlaylistWriteToFile");
             Timestamp testTimestamp = new Timestamp(new Date().getTime());
@@ -198,19 +181,17 @@ public class testPlaylist extends abstractTestPrint {
 
         } catch (EmptyStringException e) {
             System.out.println("Oop. setPlaylistName detects an emptyString for playlistName");
-        } catch (AlreadyInPlaylistException e) {
-            fail("");
         } catch (NullPointerException e) {
             fail("");
         } catch (EmptyPlaylistException e) {
             fail("Playlist is empty!");
-        } catch(IOException e){
+        } catch (IOException e) {
             fail(e.toString());
         }
     }
 
     @Test
-    public void testWriteToFileEmptyPlaylistException(){
+    public void testWriteToFileEmptyPlaylistException() {
         try {
             p.setPlaylistName("testPlaylistWriteToFile");
             p.writeToFile(p.convertToGsonString());
@@ -234,7 +215,7 @@ public class testPlaylist extends abstractTestPrint {
     }
 
     @Test
-    public void testEquals(){
+    public void testEquals() {
         //test if two var with the same object references
         Playlist p2 = p;
         assertTrue(p.equals(p2));
@@ -244,26 +225,23 @@ public class testPlaylist extends abstractTestPrint {
         assertTrue(p.equals(p3));
 
 
-        try {
-            //test if two playlist with same order of songs are equal
-            p.addSong(september);
-            p3.addSong(september);
-            assertTrue(p.equals(p3));
+        //test if two playlist with same order of songs are equal
+        p.addSong(september);
+        p3.addSong(september);
+        assertTrue(p.equals(p3));
 
-            p.addSong(islands);
-            p3.addSong(islands);
-            assertTrue(p.equals(p3));
+        p.addSong(islands);
+        p3.addSong(islands);
+        assertTrue(p.equals(p3));
 
-            //test if two playlist with different order of songs are equal
-            p.addSong(lostInTheLight);
-            p3.addSong(laLaLand);
-            p.addSong(laLaLand);
-            p3.addSong(lostInTheLight);
-            assertFalse(p.equals(p3));
+        //test if two playlist with different order of songs are equal
+        p.addSong(lostInTheLight);
+        p3.addSong(laLaLand);
+        p.addSong(laLaLand);
+        p3.addSong(lostInTheLight);
+        assertFalse(p.equals(p3));
 
-        } catch (AlreadyInPlaylistException e) {
-            fail("");
-        }
+
     }
 
 //    //YOU DON'T TET HASHCODE

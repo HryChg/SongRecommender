@@ -1,4 +1,4 @@
-package GUI;
+package other;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -32,13 +32,6 @@ public class JavafxSample extends Application {
     private int WIDTH = 600;
     private int HEIGHT = 400;
     private int TITLE_FONT = 20;
-
-
-    static {
-        JFXPanel fxPanel = new JFXPanel();
-    }
-
-
 
     @Override
     public void start(Stage primaryStage) throws Exception {

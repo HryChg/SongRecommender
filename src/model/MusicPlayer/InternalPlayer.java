@@ -8,7 +8,8 @@ import javazoom.jl.player.Player;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-public class InternalPlayer{
+//not public
+class InternalPlayer{
 
     private final static int NOTSTARTED = 0;
     private final static int PLAYING = 1;
@@ -137,28 +138,28 @@ public class InternalPlayer{
     }
 
 
-    // demo how to use
-    public static void main(String[] argv) {
-        try {
-            FileInputStream input = new FileInputStream("songs/April Shower.mp3");
-            InternalPlayer player = new InternalPlayer(input);
-
-            // start playing
-            player.play();
-
-            // after 5 secs, pause
-            Thread.sleep(5000);
-            player.pause();
-
-            // after 5 secs, resume
-            Thread.sleep(5000);
-            player.resume();
-
-            Thread.sleep(5000);
-
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    // demo how to use
+//    public static void main(String[] argv) {
+//        try {
+//            FileInputStream input = new FileInputStream("songs/April Shower.mp3");
+//            InternalPlayer player = new InternalPlayer(input);
+//
+//            // start playing
+//            player.play();
+//
+//            // after 5 secs, pause
+//            Thread.sleep(5000);
+//            player.pause();
+//
+//            // after 5 secs, resume
+//            Thread.sleep(5000);
+//            player.resume();
+//
+//            Thread.sleep(5000);
+//
+//        } catch (final Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 }
