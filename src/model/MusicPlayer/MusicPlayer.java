@@ -188,13 +188,8 @@ public class MusicPlayer {
                             System.out.println("saving to data base");
                             p.writeToFile(p.convertToGsonString());
 
-
-
                             //force stop java virtual machine!!!
                             exit(0);
-
-
-
 
                         } catch (EmptyPlaylistException e) {
                             e.printStackTrace();

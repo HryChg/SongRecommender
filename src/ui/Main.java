@@ -1,6 +1,5 @@
 package ui;
 
-import exceptions.EmptyPlaylistException;
 import model.*;
 
 
@@ -22,7 +21,7 @@ public class Main {
                 "GitHub Repo/projectw1_team997/savedFiles/savedPlaylists/MainPlaylist.txt";
         String songPath = "/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/songs";
 
-        pm.updateDatabase(mainPlaylistPath, songPath);
+        pm.addFilesToDatabase(mainPlaylistPath, songPath);
         mainPlaylist.readFromFile(mainPlaylistPath);
         mainPlaylist.print();
         //pm.askEachSongStatus(mainPlaylist);

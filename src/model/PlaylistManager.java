@@ -4,6 +4,7 @@ import exceptions.AlreadyInPlaylistException;
 import exceptions.EmptyPlaylistException;
 import exceptions.NotAudioFileException;
 import javafx.print.PageLayout;
+import org.apache.poi.ss.formula.functions.Today;
 
 import javax.sound.midi.Soundbank;
 import java.io.File;
@@ -17,6 +18,8 @@ public class PlaylistManager {
     private AudioParser ap;
     private Timestamp currentTimeStamp;
     private Scanner scanner;
+    private Double LIMITS_FOR_RECENTLY_PLAYED = 1.728e+8; //two days
+    private Double LIMITS_FOR_LOST_SONGS = 2.592e+8; //three days
 
     public PlaylistManager() {
 
@@ -102,7 +105,7 @@ public class PlaylistManager {
     //MODIFIES: database
     //EFFETCS: update dataBase with new mp3 files
     //TODO: the mp3 files I thrown in has no metadata
-    public void updateDatabase(String databasePath, String newFilePath) {
+    public void addFilesToDatabase(String databasePath, String newFilePath) {
         try {
             Playlist database = new Playlist("Song Database");
             database.readFromFile(databasePath);
@@ -111,24 +114,87 @@ public class PlaylistManager {
         } catch (EmptyPlaylistException e) {
             e.printStackTrace();
         }
-
-
     }
 
 
-    public Playlist filterFavoritePlaylist(Playlist playlist) {
-//        Playlist p = new Playlist("Favorite Songs");
-//        for (Song song : playlist.getListOfSongs()) {
-//            if (song.getIsFavorite()) {
-//                p.addSong(song);
-//            }
-//        }
-//        return p;
-        //return filter(playlist, "favorite");
-        return filter(playlist, "recentlyPlayed");
+    public Playlist filter(Playlist datbase, Boolean favorite, Boolean hate, Boolean recentlyPlayed, Boolean lostSong, Boolean neverPlayed){
+        String outputPlaylistName = "Filtered Playlist----";
+        if(favorite){
+            outputPlaylistName += "Favorite, ";
+        }
+        if(hate){
+            outputPlaylistName += "Hate, ";
+        }
+        if(recentlyPlayed){
+            outputPlaylistName += "Recently Played, ";
+        }
+        if(lostSong){
+            outputPlaylistName += "Lost Song, ";
+        }
+        if(neverPlayed){
+            outputPlaylistName += "Never Played, ";
+        }
+
+        Playlist outputPlaylist = new Playlist(outputPlaylistName);
+        for (Song song: datbase.getListOfSongs()){
+            //--------------------------------------------------------------------------------------------------
+            if (favorite){
+                if (song.getIsFavorite()){
+                    outputPlaylist.addSong(song);
+                }
+            }
+
+            //--------------------------------------------------------------------------------------------------
+            if(hate){
+                if(song.getIsHate()){
+                    outputPlaylist.addSong(song);
+                }
+            }
+
+            //--------------------------------------------------------------------------------------------------
+            if(recentlyPlayed) {
+                //songs that way played in the last 24 hrs
+                Timestamp timeStampForToday = new Timestamp(new Date().getTime());
+                Long songPlayedDate = song.getLastPlayedDate().getTime();
+                if (songPlayedDate.equals(null)) {
+                    //note some songs are just null
+                    //do nothing
+                }
+                if (timeStampForToday.getTime() - LIMITS_FOR_RECENTLY_PLAYED < song.getLastPlayedDate().getTime()) {
+                    outputPlaylist.addSong(song);
+                }
+            }
+
+
+            //--------------------------------------------------------------------------------------------------
+            if(lostSong){
+                //song that has not been played for 2 days
+                Timestamp timeStampForToday = new Timestamp(new Date().getTime());
+                Long songPlayedDate = song.getLastPlayedDate().getTime();
+                if (songPlayedDate.equals(null)) {
+                    //note some songs are just null
+                    //do nothing
+                }
+                if (timeStampForToday.getTime() - LIMITS_FOR_LOST_SONGS > song.getLastPlayedDate().getTime()) {
+                    outputPlaylist.addSong(song);
+                }
+            }
+
+            if(neverPlayed){
+                //Long songPlayedDate = song.getLastPlayedDate().getTime();
+                if (song.getLastPlayedDate() == null) {
+                    outputPlaylist.addSong(song);
+                }
+            }
+        }
+
+        return outputPlaylist;
     }
 
-    private Playlist filter(Playlist playlist, String songType) {
+
+
+
+    private Playlist filter2(Playlist playlist, String songType) {
         Playlist p = new Playlist("");
 
 
@@ -157,7 +223,7 @@ public class PlaylistManager {
                 if ( songPlayedDate.equals(null)){
                     //do nothing
                 }
-                if (todayTimeStamp.getTime() - 2.592e+8 < song.getLastPlayedDate().getTime()) {
+                if (todayTimeStamp.getTime() - 8.64e+7 < song.getLastPlayedDate().getTime()) {
                     p.addSong(song);
                 }
             }
@@ -172,15 +238,31 @@ public class PlaylistManager {
     public static void main(String[] args) {
         PlaylistManager pm = new PlaylistManager();
 
+        Playlist database = new Playlist("database");
+        database.readFromFile("savedFiles/savedPlaylists/MainPlaylist.txt");
 
-        //print out favorite songs in data base
-        Playlist temp = new Playlist("temp");
-        temp.readFromFile("savedFiles/savedPlaylists/MainPlaylist.txt");
-        temp.print();
+//        //filter database and output playlist
+//        Playlist outputPlaylist = pm.filter(database, false, false, false, false, true);
+//        outputPlaylist.print();
 
 
-        Playlist p = pm.filterFavoritePlaylist(temp);
-        p.print();
+
+//        Song song = database.getSong(5);
+//        Long today = new Date().getTime();
+//        System.out.println(today);
+//        System.out.println(86400000);
+//        System.out.println(today-86400000);
+//        System.out.println(song.getPlayedTime().getTime());
+
+//        Song s = new Song("s");
+//        System.out.println(s.getLastPlayedDate());
+
+
+        String path = "/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/songs";
+        pm.saveMultipleAudioFilesToPlaylist(path, database);
+        database.print();
+
+
 
 
     }
