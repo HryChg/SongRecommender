@@ -6,33 +6,40 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+
 public class Main extends Application {
     Stage window;
+    FXMLLoader loader;
+    Controller controller;
+    Parent root;
 
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
         window = primaryStage;
 
-        // this tells Java to use our closing procedure
-        window.setOnCloseRequest(e -> {
-            e.consume();
-            closeProgram();
-        });
+        loader = new FXMLLoader(getClass().getResource("MainFrame.fxml"));
+        root = loader.load();
+        controller = loader.getController();
 
-
-        Parent root = FXMLLoader.load(getClass().getResource("MainFrame.fxml"));
-        window.setTitle("Hello World");
+        window.setTitle("Song Recommender");
         window.setScene(new Scene(root, 800, 500));
         window.show();
+
+        // when use close the window, the database is updated with new records
+        window.setOnCloseRequest(e -> {
+            e.consume();
+            System.out.println("Window Closed");
+            controller.exitProcedure();
+            window.close();
+        });
+
     }
-
-    private void closeProgram(){
-
-    }
-
 
     public static void main(String[] args) {
         launch(args);
     }
+
+
 }
+

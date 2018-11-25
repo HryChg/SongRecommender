@@ -50,6 +50,8 @@ public class Controller implements Initializable {
 
         //initializing status bar
         status.setText("Loaded Playlist");
+
+        dataBase.print();
     }
 
 
@@ -83,6 +85,8 @@ public class Controller implements Initializable {
 
         currentQueue = pm.filter(dataBase, favoriteBox.isSelected(), hateBox.isSelected(),
                 recentlyPlayedBox.isSelected(), lostSongBox.isSelected(), neverPlayedBox.isSelected(), allSongsBox.isSelected());
+
+        currentQueue.print();
     }
 
 
@@ -90,8 +94,8 @@ public class Controller implements Initializable {
     //todo update the database in the end
     //before exiting, update the data base
     public void exitProcedure(){
-
         try {
+            System.out.println("Saving to database...");
             dataBase.writeToFile(dataBase.convertToGsonString());
         } catch (EmptyPlaylistException e){
             e.printStackTrace();
