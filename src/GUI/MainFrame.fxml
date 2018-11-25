@@ -80,6 +80,8 @@
                         <CheckBox fx:id="hateBox" mnemonicParsing="false" style="-fx-text-fill: white" text="Hate" />
                         <CheckBox fx:id="recentlyPlayedBox" mnemonicParsing="false" style="-fx-text-fill: white" text="Recently Played" />
                         <CheckBox fx:id="lostSongBox" mnemonicParsing="false" style="-fx-text-fill: white" text="Lost Songs" />
+                        <CheckBox fx:id="neverPlayedBox" mnemonicParsing="false" style="-fx-text-fill: white" text="Never Played" />
+                        <CheckBox fx:id="allSongsBox" mnemonicParsing="false" style="-fx-text-fill: white" text="All Songs" />
                         <Button fx:id="submitButton" mnemonicParsing="false" onAction="#submitButtonClick" text="Submit" />
                      </children>
                      <HBox.margin>
@@ -88,7 +90,7 @@
                   </VBox>
                </children>
             </HBox>
-            <Region prefHeight="80.0" />
+            <Region prefHeight="30.0" />
             <HBox alignment="CENTER" prefHeight="43.0" prefWidth="526.0" spacing="25.0">
                <children>
                   <Button fx:id="playButton" alignment="CENTER" mnemonicParsing="false" onAction="#playButtonClick" text="Play" HBox.hgrow="ALWAYS">

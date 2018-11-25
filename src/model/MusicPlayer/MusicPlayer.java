@@ -117,7 +117,7 @@ public class MusicPlayer {
     public static void main(String[] args) {
 
         Playlist p = new Playlist("p");
-        p.readFromFile("savedFiles/savedPlaylists/MainPlaylist.txt");
+        p.readFromFile("savedFiles/savedPlaylists/database.txt");
 
         MusicPlayer musicPlayer = new MusicPlayer(p);
         musicPlayer.play();

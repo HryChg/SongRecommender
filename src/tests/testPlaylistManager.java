@@ -1,14 +1,9 @@
 package tests;
 
-import model.AudioParser;
 import model.Playlist;
 import model.PlaylistManager;
-import model.Song;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ui.Main;
-
-import java.io.File;
 
 import static org.jsoup.helper.Validate.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;

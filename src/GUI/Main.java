@@ -14,11 +14,21 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         window = primaryStage;
 
+        // this tells Java to use our closing procedure
+        window.setOnCloseRequest(e -> {
+            e.consume();
+            closeProgram();
+        });
+
 
         Parent root = FXMLLoader.load(getClass().getResource("MainFrame.fxml"));
         window.setTitle("Hello World");
         window.setScene(new Scene(root, 800, 500));
         window.show();
+    }
+
+    private void closeProgram(){
+
     }
 
 

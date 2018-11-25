@@ -32,6 +32,8 @@ public class Controller implements Initializable {
     @FXML private CheckBox hateBox;
     @FXML private CheckBox recentlyPlayedBox;
     @FXML private CheckBox lostSongBox;
+    @FXML private CheckBox neverPlayedBox;
+    @FXML private CheckBox allSongsBox;
 
     @FXML private Button submitButton;
 
@@ -43,7 +45,7 @@ public class Controller implements Initializable {
         //initializing songList
         System.out.println("Loading DataBase...");
 
-        dataBase.readFromFile("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/savedFiles/savedPlaylists/MainPlaylist.txt");
+        dataBase.readFromFile("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/savedFiles/savedPlaylists/database.txt");
         songListView.getItems().addAll(dataBase.getListOfSongs());
 
         //initializing status bar
@@ -73,25 +75,21 @@ public class Controller implements Initializable {
 
     public void submitButtonClick(){
         status.setText("New Selections Made...");
-        handleOptions(favoriteBox, hateBox, recentlyPlayedBox, lostSongBox);
+        handleOptions(favoriteBox, hateBox, recentlyPlayedBox, lostSongBox, neverPlayedBox, allSongsBox);
     }
-
-
-
-
 
     //add filters on database base on the selected choiceBox
-    private void handleOptions(CheckBox favoriteBox, CheckBox hateBox, CheckBox recentlyPlayedBox, CheckBox lostSongBox){
-        //todo make the filter music database work here
-        //utilize the database variable to get this
+    private void handleOptions(CheckBox favoriteBox, CheckBox hateBox, CheckBox recentlyPlayedBox, CheckBox lostSongBox, CheckBox neverPlayedBox, CheckBox allSongsBox){
 
-
-
+        currentQueue = pm.filter(dataBase, favoriteBox.isSelected(), hateBox.isSelected(),
+                recentlyPlayedBox.isSelected(), lostSongBox.isSelected(), neverPlayedBox.isSelected(), allSongsBox.isSelected());
     }
+
+
 
     //todo update the database in the end
     //before exiting, update the data base
-    private void exitProcedure(){
+    public void exitProcedure(){
 
         try {
             dataBase.writeToFile(dataBase.convertToGsonString());

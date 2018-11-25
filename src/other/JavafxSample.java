@@ -217,7 +217,7 @@ public class JavafxSample extends Application {
     //EFFECTS: open existing song database
     private List<Song> getDataBase() {
         Playlist p = new Playlist("Song Database");
-        p.readFromFile("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/savedFiles/savedPlaylists/MainPlaylist.txt");
+        p.readFromFile("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/savedFiles/savedPlaylists/database.txt");
         return p.getListOfSongs();
     }
 
