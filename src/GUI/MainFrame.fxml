@@ -24,13 +24,16 @@
             <HBox>
                <children>
                   <Region prefWidth="80.0" />
-                  <Label style="-fx-text-fill: white" text="All Songs" textAlignment="CENTER">
+                  <Label style="-fx-text-fill: white" text="Database">
                      <padding>
                         <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
                      </padding>
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
+                      <font>
+                          <Font name="Futura Bold" size="17.0" />
+                      </font>
                   </Label>
                   <Region prefWidth="80.0" />
                </children>

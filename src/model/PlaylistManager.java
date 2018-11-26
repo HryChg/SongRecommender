@@ -104,15 +104,15 @@ public class PlaylistManager {
     }
 
 
-    public Playlist filter(Playlist database, Boolean favorite, Boolean hate, Boolean recentlyPlayed, Boolean lostSong, Boolean neverPlayed, Boolean allSongs){
+    public Playlist filter(Playlist database, Boolean favorite, Boolean hate, Boolean recentlyPlayed, Boolean lostSong, Boolean neverPlayed, Boolean allSongs) {
         String outputPlaylistName = "Filtered Playlist----";
 
         //return all songs
-        if (allSongs){
+        if (allSongs) {
             outputPlaylistName += "All Songs";
             Playlist outputPlaylist = new Playlist(outputPlaylistName);
-            if (allSongs){
-                for (Song song: database.getListOfSongs()){
+            if (allSongs) {
+                for (Song song : database.getListOfSongs()) {
                     outputPlaylist.addSong(song);
                 }
 
@@ -120,40 +120,40 @@ public class PlaylistManager {
             return outputPlaylist;
         }
 
-        if(favorite){
+        if (favorite) {
             outputPlaylistName += "Favorite, ";
         }
-        if(hate){
+        if (hate) {
             outputPlaylistName += "Hate, ";
         }
-        if(recentlyPlayed){
+        if (recentlyPlayed) {
             outputPlaylistName += "Recently Played, ";
         }
-        if(lostSong){
+        if (lostSong) {
             outputPlaylistName += "Lost Song, ";
         }
-        if(neverPlayed){
+        if (neverPlayed) {
             outputPlaylistName += "Never Played, ";
         }
 
         Playlist outputPlaylist = new Playlist(outputPlaylistName);
-        for (Song song: database.getListOfSongs()){
+        for (Song song : database.getListOfSongs()) {
             //--------------------------------------------------------------------------------------------------
-            if (favorite){
-                if (song.getIsFavorite()){
+            if (favorite) {
+                if (song.getIsFavorite()) {
                     outputPlaylist.addSong(song);
                 }
             }
 
             //--------------------------------------------------------------------------------------------------
-            if(hate){
-                if(song.getIsHate()){
+            if (hate) {
+                if (song.getIsHate()) {
                     outputPlaylist.addSong(song);
                 }
             }
 
             //--------------------------------------------------------------------------------------------------
-            if(recentlyPlayed) {
+            if (recentlyPlayed) {
                 //songs that way played in the last 24 hrs
                 Timestamp timeStampForToday = new Timestamp(new Date().getTime());
 
@@ -167,7 +167,7 @@ public class PlaylistManager {
 
 
             //--------------------------------------------------------------------------------------------------
-            if(lostSong){
+            if (lostSong) {
                 //song that has not been played for 2 days
                 Timestamp timeStampForToday = new Timestamp(new Date().getTime());
 
@@ -179,7 +179,7 @@ public class PlaylistManager {
                 }
             }
 
-            if(neverPlayed){
+            if (neverPlayed) {
                 //Long songPlayedDate = song.getLastPlayedDate().getTime();
                 if (song.getLastPlayedDate() == null) {
                     outputPlaylist.addSong(song);
@@ -190,30 +190,27 @@ public class PlaylistManager {
         return outputPlaylist;
     }
 
-//    public static void main(String[] args) {
-//        PlaylistManager pm = new PlaylistManager();
-//
-//        Playlist database = new Playlist("database");
-//        database.readFromFile("savedFiles/savedPlaylists/database.txt");
-//
+    public static void main(String[] args) {
+        PlaylistManager pm = new PlaylistManager();
+
+        Playlist database = new Playlist("database");
+        database.readFromFile("savedFiles/savedPlaylists/database.txt");
+
 //        //filter database and output playlist
 //        Playlist outputPlaylist = pm.filter(database, false, false, false, false, true, false);
 //        outputPlaylist.print();
-//
-//
-//        String path = "/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/songs";
-//        pm.saveMultipleAudioFilesToPlaylist(path, database);
-//        database.print();
-//
-//        try {
-//            database.setPlaylistName("MainPlaylist");
-//            database.writeToFile(database.convertToGsonString());
-//        } catch (EmptyStringException e) {
-//            e.printStackTrace();
-//        } catch (EmptyPlaylistException e) {
-//            e.printStackTrace();
-//        }
-//    }
+
+
+        String path = "/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/songs";
+        pm.saveMultipleAudioFilesToPlaylist(path, database);
+        database.print();
+
+        try {
+            database.writeToFile(database.convertToGsonString());
+        } catch (EmptyPlaylistException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }
