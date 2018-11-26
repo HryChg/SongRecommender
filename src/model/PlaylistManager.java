@@ -206,8 +206,11 @@ public class PlaylistManager {
         database.print();
 
         try {
+            database.setPlaylistName("database");
             database.writeToFile(database.convertToGsonString());
         } catch (EmptyPlaylistException e) {
+            e.printStackTrace();
+        } catch (EmptyStringException e) {
             e.printStackTrace();
         }
     }
