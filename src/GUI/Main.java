@@ -6,7 +6,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
 import javafx.stage.Stage;
 import model.Song;
 
@@ -38,10 +37,6 @@ public class Main extends Application {
             controller.exitProcedure();
             window.close();
         });
-
-
-
-
 
 
 

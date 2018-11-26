@@ -1,8 +1,12 @@
 package GUI;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import model.MusicPlayer.MusicPlayer;
 import model.Playlist;
 import model.PlaylistManager;
@@ -20,13 +24,11 @@ public class Controller implements Initializable {
     private MusicPlayer musicPlayer = MusicPlayer.getInstance();
     private boolean musicPlayerInitialized = false;
 
+    @FXML private MenuBar menuBar;
+    @FXML private MenuItem menuFileClose;
 
     @FXML private ListView<Song> songListView = new ListView<>();
-    @FXML private Label status;
-    @FXML private Button button;
-    @FXML private Button pauseButton;
-    @FXML private Button skipButton;
-    @FXML private Button stopButton;
+    @FXML private TextField searchTextField;
 
     @FXML private CheckBox favoriteBox;
     @FXML private CheckBox hateBox;
@@ -34,8 +36,14 @@ public class Controller implements Initializable {
     @FXML private CheckBox lostSongBox;
     @FXML private CheckBox neverPlayedBox;
     @FXML private CheckBox allSongsBox;
-
     @FXML private Button submitButton;
+
+    @FXML private Button button;
+    @FXML private Button pauseButton;
+    @FXML private Button skipButton;
+    @FXML private Button stopButton;
+
+    @FXML private Label status;
 
 
     //this is where you run your initialization when the window first open
@@ -43,25 +51,32 @@ public class Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         //initializing songList
         System.out.println("Loading DataBase...");
-
         dataBase.readFromFile("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/savedFiles/savedPlaylists/database.txt");
         songListView.getItems().addAll(dataBase.getListOfSongs());
-
+        songListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE); //allow list to select multiple songs
         //initializing status bar
         status.setText("Loaded Playlist");
+
 
         System.out.println("The following is the current data base:");
         dataBase.print();
         System.out.println("\n");
 
-
         System.out.println("The following is the current music player queue:");
         musicPlayer.getPlaylist().print();
         System.out.println("\n");
 
-        //allow list to select multiple songs
-        songListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        //allow searchTextField to update songListView result
+        searchTextField.textProperty().addListener((v, oldValue, newValue)->{
+            handleSearchOnSongListView(oldValue, newValue);
+        });
+    }
 
+    public void menuFileCloseClick(){
+        Stage window = (Stage) menuBar.getScene().getWindow();
+        System.out.println("Window Closed");
+        exitProcedure();
+        window.close();
     }
 
     public void playButtonClick(){
@@ -95,7 +110,6 @@ public class Controller implements Initializable {
 
     public void stopButtonClick(){
         status.setText("Stop Button Clicked");
-        //todo: stop muisc here
         musicPlayer.stop();
         musicPlayer = MusicPlayer.refreshInstance();
         musicPlayer.setPlaylist(currentQueue);
@@ -126,7 +140,6 @@ public class Controller implements Initializable {
                 recentlyPlayedBox.isSelected(), lostSongBox.isSelected(), neverPlayedBox.isSelected(), allSongsBox.isSelected());
 
         currentQueue.print();
-
     }
 
     //save the database before exiting
@@ -139,5 +152,30 @@ public class Controller implements Initializable {
 //        } catch (EmptyPlaylistException e){
 //            e.printStackTrace();
 //        }
+    }
+
+    private void handleSearchOnSongListView(String oldValue, String newValue){
+        // If the number of characters in the text box is less than last time it must be because the user pressed delete
+        if ( oldValue != null && (newValue.length() < oldValue.length()) ) {
+            // Restore the lists original set of entries and start from the beginning
+            ObservableList<Song> entries = FXCollections.observableArrayList();
+            for (Song song: dataBase.getListOfSongs()){
+                entries.add(song);
+            }
+            songListView.setItems(entries);
+        }
+
+        // Change to upper case so that case is not an issue
+        newValue = newValue.toUpperCase();
+
+        // Filter out the entries that don't contain the entered text
+        ObservableList<Song> subentries = FXCollections.observableArrayList();
+        for ( Song entry: songListView.getItems() ) {
+            String entryText = entry.getSongName();
+            if ( entryText.toUpperCase().contains(newValue) ) {
+                subentries.add(entry);
+            }
+        }
+        songListView.setItems(subentries);
     }
 }

@@ -8,11 +8,11 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="800.0" style="-fx-background-color: indianred;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controller">
    <top>
-      <MenuBar BorderPane.alignment="CENTER">
+      <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
+              <MenuItem fx:id="menuFileClose" mnemonicParsing="false" onAction="#menuFileCloseClick" text="Close" />
             </items>
           </Menu>
         </menus>
@@ -35,7 +35,7 @@
                   <Region prefWidth="80.0" />
                </children>
             </HBox>
-            <TextField promptText="search here..." />
+            <TextField fx:id="searchTextField" promptText="search here..." />
             <ListView fx:id="songListView" minWidth="250.0" prefHeight="800.0" />
          </children>
          <padding>

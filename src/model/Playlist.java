@@ -97,48 +97,6 @@ public class Playlist extends ReadableWritable implements Printable{
 
     }
 
-//    @Override
-//    //MODIFIES: savedQueue.txt
-//    //EFFECTS: insert the playlist to savedQueue.txt
-//    public void insertQueue() {
-//        String fileLocation = "savedFiles/savedQueue.txt";
-//        File queueFile = new File(fileLocation);
-//
-//        //create a new file if it does not exist under fileLocation
-//        if (!queueFile.exists()) {
-//            try {
-//                File directory = new File(queueFile.getParent());
-//                if (!directory.exists()) {
-//                    directory.mkdirs();
-//                }
-//                queueFile.createNewFile();
-//
-//            } catch (IOException e) {
-//                System.out.println("Exception Occurred: " + e.toString());
-//            }
-//        }
-//
-//        //trying to add content into the queue
-//        try {
-//            // Convenience Class for Writing character files
-//            FileWriter playlistWriter;
-//            playlistWriter = new FileWriter(queueFile.getAbsoluteFile(), true);
-//
-//            //Write text
-//            BufferedWriter bufferedWriter = new BufferedWriter(playlistWriter);
-//            for (Song song : getListOfSongs()) {
-//                bufferedWriter.write("\n" + "- " + song.getSongName());
-//            }
-//            bufferedWriter.close();
-//
-//            System.out.println("queueFile saved at location: " + fileLocation + "\n" + "Data added: " + getPlayListName() + "\n");
-//
-//        } catch (FileNotFoundException e) {
-//            System.out.println("Error! File not Found!");
-//        } catch (IOException e) {
-//            System.out.println("Hmm... got an error while saving Playlist Data to file " + e.toString());
-//        }
-//    }
 
     @Override
     //REQUIRES: myData needs to be in the format of GSON string
