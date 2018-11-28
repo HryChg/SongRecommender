@@ -37,10 +37,6 @@ public class Main extends Application {
             controller.exitProcedure();
             window.close();
         });
-
-
-
-
     }
 
     public static void main(String[] args) {

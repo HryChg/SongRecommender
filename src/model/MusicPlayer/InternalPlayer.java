@@ -10,6 +10,9 @@ import java.io.InputStream;
 
 //not public
 class InternalPlayer{
+    /*
+    * Code Source: https://stackoverflow.com/questions/12057214/jlayer-pause-and-resume-song
+    * */
 
     private final static int NOTSTARTED = 0;
     private final static int PLAYING = 1;

@@ -101,7 +101,7 @@ public class MusicPlayer {
         //looping through actualMP3s and create new internalPlayer to for every MP3
         int index = 0;
 
-        outerloop:
+
         for (FileInputStream fis : actualMP3s) {
             Song song = currentPlaylist.getSong(index);
             setPlayedTimeAndLastPlayedDate(song);
@@ -121,7 +121,8 @@ public class MusicPlayer {
                 if (stopPlayer) {
                     internalPlayer.close();
                     stopPlayer = false;
-                    break outerloop;
+
+                    return;
                 }
             }
         }
@@ -153,49 +154,51 @@ public class MusicPlayer {
     }
 
 
-//    //testing out
-//    public static void main(String[] args) {
-//        PlaylistManager pm = new PlaylistManager();
-//
-//        Playlist playlist = new Playlist("TestingDeleteThisWhenYouCan");
-//        pm.saveMultipleAudioFilesToPlaylist("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/songs", playlist);
-//        playlist.print();
-//
-//        //loading the playlist to music player
-//        MusicPlayer musicPlayer = MusicPlayer.getInstance();
-//        musicPlayer.setPlaylist(playlist);
-//
-//
-//
-//        try {
-//            musicPlayer.initializeThreadAndPlay();
-//
-//            Thread.sleep(5000);
-//            musicPlayer.pause();
-//
-//            Thread.sleep(5000);
-//            musicPlayer.resume();
-//
-//            Thread.sleep(5000);
-//            musicPlayer.skip();
-//
-//            Thread.sleep(5000);
-//            musicPlayer.stop();
-//
-//
+    //testing out
+    public static void main(String[] args) {
+        PlaylistManager pm = new PlaylistManager();
+
+        Playlist playlist = new Playlist("TestingDeleteThisWhenYouCan");
+        pm.saveMultipleAudioFilesToPlaylist("/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/songs", playlist);
+        playlist.print();
+
+        //loading the playlist to music player
+        MusicPlayer musicPlayer = MusicPlayer.getInstance();
+        musicPlayer.setPlaylist(playlist);
+
+
+
+        try {
+            musicPlayer.initializeThreadAndPlay();
+
+            Thread.sleep(5000);
+            musicPlayer.pause();
+
+            Thread.sleep(5000);
+            musicPlayer.resume();
+
+            Thread.sleep(5000);
+            musicPlayer.skip();
+
+            Thread.sleep(5000);
+            musicPlayer.stop();
+
+
+
+
 //            //after stop the music. Refresh the instance to get it playing again
 //            musicPlayer = MusicPlayer.refreshInstance();
 //            musicPlayer.setPlaylist(playlist);
 //            Thread.sleep(5000);
 //            musicPlayer.initializeThreadAndPlay();
-//
-//
-//
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
+
+
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
 }

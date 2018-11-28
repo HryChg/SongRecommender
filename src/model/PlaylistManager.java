@@ -190,30 +190,30 @@ public class PlaylistManager {
         return outputPlaylist;
     }
 
-    public static void main(String[] args) {
-        PlaylistManager pm = new PlaylistManager();
-
-        Playlist database = new Playlist("database");
-        database.readFromFile("savedFiles/savedPlaylists/database.txt");
-
+//    public static void main(String[] args) {
+//        PlaylistManager pm = new PlaylistManager();
+//
+//        Playlist database = new Playlist("database");
+//        database.readFromFile("savedFiles/savedPlaylists/database.txt");
+//
 //        //filter database and output playlist
 //        Playlist outputPlaylist = pm.filter(database, false, false, false, false, true, false);
 //        outputPlaylist.print();
-
-
-        String path = "/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/songs";
-        pm.saveMultipleAudioFilesToPlaylist(path, database);
-        database.print();
-
-        try {
-            database.setPlaylistName("database");
-            database.writeToFile(database.convertToGsonString());
-        } catch (EmptyPlaylistException e) {
-            e.printStackTrace();
-        } catch (EmptyStringException e) {
-            e.printStackTrace();
-        }
-    }
+//
+//
+//        String path = "/Users/harrychuang/Desktop/CPSC 210/CSPC 210 Personal Course Project/GitHub Repo/projectw1_team997/songs";
+//        pm.saveMultipleAudioFilesToPlaylist(path, database);
+//        database.print();
+//
+//        try {
+//            database.setPlaylistName("database");
+//            database.writeToFile(database.convertToGsonString());
+//        } catch (EmptyPlaylistException e) {
+//            e.printStackTrace();
+//        } catch (EmptyStringException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
 }

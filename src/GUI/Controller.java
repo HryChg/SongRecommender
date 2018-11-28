@@ -1,5 +1,6 @@
 package GUI;
 
+import exceptions.EmptyPlaylistException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -146,12 +147,12 @@ public class Controller implements Initializable {
     //being called in Main class
     public void exitProcedure(){
         //todo comeback and tne turn this saving mode on
-//        try {
-//            System.out.println("Saving to database...");
-//            dataBase.writeToFile(dataBase.convertToGsonString());
-//        } catch (EmptyPlaylistException e){
-//            e.printStackTrace();
-//        }
+        try {
+            System.out.println("Saving to database...");
+            dataBase.writeToFile(dataBase.convertToGsonString());
+        } catch (EmptyPlaylistException e){
+            e.printStackTrace();
+        }
     }
 
     private void handleSearchOnSongListView(String oldValue, String newValue){
