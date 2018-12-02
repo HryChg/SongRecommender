@@ -24,7 +24,13 @@ public class Main extends Application {
 
         loader = new FXMLLoader(getClass().getResource("MainFrame.fxml"));
         root = loader.load();
-        controller = loader.getController();
+        controller = loader.getController();//////
+
+
+        int i;
+
+
+
 
         window.setTitle("Song Recommender");
         window.setScene(new Scene(root, 800, 500));
